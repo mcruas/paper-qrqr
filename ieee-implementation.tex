@@ -1,0 +1,107 @@
+\section{Computational Issues}
+
+This section presents computational aspects of the estimation, such as presenting the mathematical programming formulation of the QRAL, presenting the evaluation metric and the cross-validation methodology, which is essential in the process of building the function $\hat{Q}_{y_\tau|X}(\alpha)$.
+The methodology is implemented in R and Julia languages (relying heavily on the packages JuMP, Gurobi, RCall and Dierckx) and using the Gurobi solver.
+
+The QRAL model, as described in equation (\ref{eq:adalasso_model}), can be implemented as a linear programming problem as shown below:
+\begin{IEEEeqnarray}{lr}
+	\underset{\beta_{0},\beta,\varepsilon_{t j}^{+},\varepsilon_{t j}^{-}}{\text{min}} \sum_{j \in J} \sum_{t \in T}(\alpha_j\varepsilon_{t j}^{+}+(1-\alpha_j)\varepsilon_{t j}^{-}) \span \nonumber  \\
+	\span + \lambda \sum_{p \in P} \sum_{j \in J} w_{pj} (\xi^+_{pj} + \xi^-_{pj}) + \gamma \sum_{p \in P} \sum_{j \in J'} (D2_{pj}^+ + D2_{pj}^-)  \label{eq:adalasso-1} \\
+	\mbox{subject to } \nonumber & \\
+	\varepsilon_{t j}^{+}-\varepsilon_{t j}^{-}=y_{t}-\beta_{0 j}-\beta_{j}^T x_{t},& \forall t \in T ,\forall j \in J,\\
+	\xi_{pj}^+ - \xi_{pj}^- = \beta_{pj},&\forall p \in P, \forall j \in J\\ 
+	D2_{pj}^+ - D2_{pj}^- = \frac{\left(\frac{\beta_{p,j+1}-\beta_{pj}}{\alpha_{j+1}-\alpha_{j}}\right)-\left(\frac{\beta_{p,j}-\beta_{p,j-1}}{\alpha_{j}-\alpha_{j-1}}\right)}{\alpha_{j+1}-\alpha_{j-1}}, \span   \nonumber \\
+	\span \forall p\in P, \forall j \in J',  \\
+	\beta_{0j} + \beta_{j}^T x_{t} \leq \beta_{0,j+1} + \beta_{j+1}^T x_{t},&\forall t \in T, \forall j \in J_{(-1)}, \label{eq:qral-crossing} \\
+	\varepsilon_{t j}^{+},\varepsilon_{t j}^{-}\geq0,&\forall t \in T, \forall j \in J,\\
+	\xi_{pj}^+, \xi_{pj}^- \geq 0, & \forall p\in P, \forall j \in J, \\
+	D2_{pj}^+, D2_{pj}^- \geq 0, & \forall p\in P, \forall j \in J'. \label{eq:adalasso-ult} 
+\end{IEEEeqnarray}
+Variables $\varepsilon^+_t$ and $\varepsilon^-_t$ represent the quantities $|y-q(\cdot)|^+$ and $|y-q(\cdot)|^-$, respectively. The first line on the objective function represents the sum of the check function over all $j$: $ \rho_{\alpha_j}(y-q(\cdot)) = \alpha_j \varepsilon^+_{tj} + (1-\alpha_j) \varepsilon^-_{tj}$. The constraint (\ref{eq:qral-crossing}) assures that the quantile function be monotonic by forcing that, for every $x_t$ and $\alpha_j$-quantile, $q_{\alpha_{j}}(x_t) \leq q_{\alpha_{j+1}}(x_t)$.
+This second derivative term is implemented on the optimization problem by adding a penalty on the objective function to penalize the absolute value $|D_{pj'}^{2}|$. The tuning parameter $\gamma$ controls how rough the sequence $\{\beta_{pj}\}_{j \in J}$ can be, for a given $p$.
+
+
+\subsection{Evaluation Metric}
+
+In this section, we present the metric for which the model fit can be evaluated. From this metric, we show two different forms - information criteria and cross validation - to determine the best tuning parameters $\lambda$ and $\gamma$.
+
+In order to evaluate our predictions, we need to define an error metric. The minimization of this error metric is the objective in estimating the statistical model. 
+As conditional distribution is the focus in this paper, we use a performance measurement which emphasizes the correctness across quantiles. Depending on the application, it might be interesting to put different weights on different quantiles. In this work, however, we will treat every quantile as equals concearning the error measure.
+The chosen error function is Mean Absolute Percentage Error (MAPE), defined by
+\begin{equation}
+MAPE^{\alpha_j}= \frac{1}{|J|} \frac{1}{|T|}  \sum_{t \in T} \sum_{j \in J} \left| \frac{q_t^{\alpha_{j}}- y_t^{\alpha_{j}}}{q_t^{\alpha_{j}}}  \right|. 
+\end{equation}
+where $q_t^{\alpha_{j}}$ is the $\alpha$-quantile from the data (in the case study, we use the monthly distribution as a good enough approximation of the true quantile, as RG series such as wind power are stationary) and $y_t^{\alpha_j}$ is the $\alpha$-quantile from these scenarios.
+This function has the advantage of penalizing error proportionally to the quantile value it is estimating. 
+
+
+\subsection{Time-series Cross Validation} \label{sec:cv}
+
+Estimating the QRAL involves the use of parameters $\lambda$ and $\gamma$, which should be known \textit{a priori}. In statistics and machine learning, a popular technique is using Cross-validation (CV) to select the best set of parameters from the range of possibilities. How to select their values among this range is a crucial point in our methodology, as the estimated coefficients vary considerably with respect to parameter choice.
+
+Out of the different possible implementations of CV, we use the $\mathcal{K}$-fold CV. It consists in first partitioning the dataset in $\mathcal{K}$ equally sized sets, which are the $\mathcal{K}$ folds. For each fold $k \in \{1,\dots,\mathcal{K}\}$, the remaining $\mathcal{K}-1$ folds are used to estimate the model using parameter $\theta$ (for the QRAL model, $\theta = [\gamma \quad \lambda]^T$) and predicting the values in fold $k$. The error function $MAPE^\alpha_\theta$ measures the result of this prediction.
+So, the CV error is given by the sum of all folds and all quantiles, for a given parameter $\theta$
+\[
+ CV(\theta) = \sum_{k \in \mathcal{K}} \sum_{j \in J} MAPE^\alpha_\theta.\label{eq:cv-error}
+\]
+The optimum parameter $\theta^*_{CV}$, according to this methodology, is the value of $\theta$ which minimizes the CV error
+\begin{equation}
+\theta_{CV}^* = \argmin_\theta CV(\theta) .\label{eq:cv-equation}
+\end{equation}
+
+The usage of CV is not straightforward when data is dependent, which is the case of time series. As it is time dependent, one can be interested in using either all observations or to take the dependency away to do not interfere on the estimation. The works
+\cite{bergmeir_note_2017} and \cite{bergmeir_use_2012} deals specifically with the usage of CV in a time series context. They provide tests with both $\mathcal{K}$-fold CV and $\mathcal{K}$-fold with non-dependent data. Both schemes are shown of Figure \ref{fig:cross-validation-scheme}.
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{Images/Cross-validation-scheme}
+	\caption{$\mathcal{K}$-fold CV and $\mathcal{K}$-fold with non-dependent data. Observations in blue are used to estimation and in orange for evaluation. Note that non-dependent data does not use all dataset in each fold. Image from \cite{bergmeir_note_2017}.}
+	\label{fig:cross-validation-scheme}
+\end{figure}
+In both settings, the training data is randomly split into a collection of sets $S_k$, forming a $\mathcal{K}$ size partition. Each of these $S_k$ is used as test set, while the rest is used to estimate coefficients which will be used to predict values of $S_k$. 
+As there are $\mathcal{K}$ folds, this procedure is done $\mathcal{K}$ times. 
+So, for a given vector of tuning parameter $\theta$, the CV score is given by the sum of the error function for each fold. 
+As the CV score is nonconvex, the optimization in (\ref{eq:cv-equation}) is done by iterating over a sequence of values in a thin grid and choosing the smallest one.
+
+
+
+% \todoi{Ver se novas figuras (R/grafico-cv.r) e ver se incluir outras formas de CV} % escolhemos trabalhar apenas com este tipo de CV
+
+
+
+
+
+\subsection{Scenario generation} \label{sec:scenario-generation}
+
+This section presents how to generate future scenarios of time series $y_t$ from the estimated coefficients from a QR model. 
+%Let $|T|$ be the total length of $\{y_t\}$ and $S$ the number of scenarios of size $K$ we produce. 
+%The variables chosen to compose $x_t$ can be either exogenous variables, autoregressive components of $y_t$ or both. We use a nonparametric approach which to estimate, at every $t$, the $k$-step ahead conditional density of $y_t$.
+To produce $S$ different future scenarios $\{ \hat{y}_t \}_{t=|T|+1}^{|T|+K}$, we use the following procedure:
+
+\noindent\rule{\columnwidth}{3pt}
+
+Procedure for simulating $S$ future scenarios of $\{y_t\}$
+
+\noindent\rule{\columnwidth}{1pt}
+
+\begin{enumerate}
+	
+	\item At first, initialize time index $\tau = |T| + 1$.
+	
+	\item For each scenario $s \in S$, estimate coefficients from QRAL. These coefficients produce quantile estimates for a collection of discrete probabilities $\alpha \in A$. Let $\tilde{Q}_{y_\tau|X}:A \rightarrow \mathbb{R}$ be the discrete quantile function. In order to produce the continuous function $\hat{Q}_{y_\tau|X}:[0,1] \rightarrow \mathbb{R}$ from the discrete function, use linear interpolation connecting the points. As $0 < \alpha_1 < \cdots < \alpha_{|J|} < 1$, there are no quantile estimates for the intervals $[0,\alpha_1]$ and $[\alpha_{|J|},1]$. These gaps are filled by linearly extending the line that connects $\alpha_1$ to $\alpha_2$ on the left hand side and extending the line that connects $\alpha_{|J|-1}$ to $\alpha_{|J|}$ on the right hand side until the support $[0,1]$ is fully mapped.  
+	
+	% \item In any given period $\tau$, for every $\alpha \in A$, we estimate $q_{\alpha_{j}}$, for every $j \in J$.
+	% Note that $x_{\tau}$ is supposed to be known at time $\tau$\footnote{In the presence of exogenous variables that are unknown, it is advisable to incorporate its uncertainty by considering different scenarios. In each scenario, though, $x_{\tau}$ must be considered fully known.}.
+	
+	% \item Let $\hat{Q}_{y_{\tau}|X}(\alpha,x_\tau)$ be the estimated quantile function of ${y}_{\tau}$. 
+	% At first, we define a discrete quantile function $\tilde{Q}_{y_\tau}$. By mapping every $\alpha \in A$ with its estimated quantile $\hat{q}_{\alpha_j}(x_t)$, we define function $\tilde{Q}_{y_{\tau}}$. In order to produce a continuous function from a set of ordered points, we use linear interpolation and we arrive on the Quantile function $\hat{Q}_{y_{\tau}}$.
+	
+	%This process is described in more details on section \ref{sec:estimating-distribution}. 
+	\item Let $U$ be a random variable with uniform distribution over the interval $[0,1]$. By using the result of the Probability Integral Transform (PIT), random variable $F^{-1}_{y_{\tau}}(U)$ has the same distribution as $y_{tau}$. The time series value at time $\tau$ and $s$ scenario $y_{tau,s}$ is built by drawing one random observation of U and applying the transformation of the PIT.
+
+	\item Let $\tau = \tau + 1$. Go back to step 2) and repeat the procedure until all the future scenarios of size $K$ are generated. 
+
+
+\end{enumerate}
+
+
+\noindent\rule{\columnwidth}{1pt}

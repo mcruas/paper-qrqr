@@ -1,0 +1,6 @@
+*.aux
+*.txss
+/Images/Nao usadas/*
+*.gz
+*.blg
+*.log

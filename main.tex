@@ -1,0 +1,140 @@
+%% Versão final IEEE
+%  \documentclass[journal]{IEEEtran}
+
+% Versão com uma coluna
+ \documentclass[article,onecolumn]{IEEEtran}
+ \usepackage[a4paper, marginparwidth=0.5in]{geometry}
+
+
+% \documentclass[journal,12pt,onecolumn]{IEEEtran}
+% \usepackage[a4paper, marginparwidth=0.5in]{geometry}
+
+% Versão Rascunho com uma coluna
+%\documentclass[journal,12pt,onecolumn,draftclsnofoot,]{IEEEtran}
+%\usepackage[a4paper, marginparwidth=1in]{geometry}
+
+%
+
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{epstopdf}
+%\usepackage[spanish]{babel}
+\usepackage[cmex10]{amsmath,nccmath}
+%\interdisplaylinepenalty=2500
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{array}
+%\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{dcolumn}
+\usepackage{color}
+\usepackage[noadjust]{cite}
+\usepackage{url}
+\usepackage{balance}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{accents}
+\usepackage{blindtext}
+%\usepackage{soul}
+\usepackage[normalem]{ulem}
+\usepackage{pgf,tikz}
+% \usepackage{subfigure}
+\usepackage{booktabs}
+\usetikzlibrary{arrows}
+%\DeclareGraphicsExtensions{.eps} % eu que comentei
+%\AppendGraphicsExtensions{.pdf} % eu que comentei
+
+
+% % % Adicionados por mim
+%\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorinlistoftodos,prependcaption,textsize=small]{todonotes}
+\usepackage{xargs} 
+
+\newcommandx{\todoi}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1,inline]{#2}}
+%\newcommand{\todop}[1]{\todo[textsize=tiny]{#1}}
+%%%%
+
+
+
+\DeclareMathOperator*{\Max}{max}
+\DeclareMathOperator*{\Min}{min}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\Maximize}{Maximize}
+
+\begin{document}
+\title{Wind Power Scenario Generation Using a High Dimensional Nonparametric Framework}
+
+\author{Marcelo~Ruas~%,~\IEEEmembership{Student Member,~IEEE,}
+	and Alexandre~Street%,~\IEEEmembership{Member,~IEEE}	
+	
+	
+	%\thanks{This work was partially supported by UTE Parna\'iba Gera\c{c}\~ao de Energia S.A. through R\&D project ANEEL PD-7625-0001/2013.}
+	%\thanks{Bruno Fanzeres, Arthur Brigatto and Alexandre Street are with the Electrical Engineering Department, Pontifical Catholic University of Rio de Janeiro (PUC-Rio), Rio de Janeiro, RJ, Brazil (e-mail: \mbox{bsantos@ele.puc-rio.br}; \mbox{street@ele.puc-rio.br}).}
+	%\thanks{L. A. Barroso are with PSR Consulting, Rio de Janeiro, RJ, Brazil (e-mail: \mbox{luiz@psr-inc.com}).}
+}
+
+\maketitle
+
+
+\begin{abstract}
+	Producing Renewable Generation scenarios is a topic of interest in power system applications. as they are required for many different applications. 	In this work, we focus on generating future scenarios of wind power.  Most time series methods used to produce such forecasts rely on the assumption of Gaussian errors or Gaussian distribution, but most applications on power systems deals with nongaussian time series. Using a nonparametric approach such as Quantile Regression allows the statistical model to adapt to the data without requiring a distribution to be known \textit{a priori}. We develop in this paper the Quantile Regularized Adaptive LASSO (QRAL), a methodology which is based on the Adaptive LASSO for quantile regression with the addition of a second derivative filter, that explores the similarity of neighbour quantiles to reduce the noise in estimation and producing better estimations and simulations. A real case study comparing with different benchmarks in the literature, the QRAL was able to outperform them in terms of minimizing the Mean Absolute Percentile Error of future scenarios in recovering the historic monthly quantiles.
+\end{abstract}
+
+\begin{IEEEkeywords}
+	Quantile Regression, Model Identification, Non-gaussian time series model
+\end{IEEEkeywords}
+
+
+% \listoftodos
+
+
+% ===== Sec. I - Introduction ===== %
+
+\input{ieee-introduction.tex}
+
+% ===== Sec. II - Quantile Regression ===== %
+%
+\input{ieee-quantile-regression.tex}
+%
+%% ===== Sec. III - Implementation ===== %
+%
+\input{ieee-implementation.tex}
+%
+
+
+%% ===== Sec. IV - Simulation ===== %
+
+%\input{ieee-simulation.tex}
+
+%% ===== Sec. V - Estimation ===== %
+%
+%\input{ieee-estimation.tex}
+
+
+%% ===== Sec. VI - Case studies ===== %
+%
+\input{ieee-case-studies.tex}
+
+
+%% ===== Sec. VI - Further Studies ===== %
+
+ \input{ieee-further-studies.tex}
+
+%% ===== Sec. - Conclusion ===== %
+%
+\input{ieee-concluding-remarks.tex}
+
+%% ===== Sec. - Appendix ===== %
+%
+%\input{ieee-apendix.tex}
+
+% % 
+
+\bibliographystyle{IEEEtran}
+\bibliography{Thesis,QR,Bibhenriquinho}
+
+
+
+\end{document}
