@@ -1,9 +1,16 @@
 %% Versão final IEEE
 %  \documentclass[journal]{IEEEtran}
 
-% Versão com uma coluna
- \documentclass[article,onecolumn]{IEEEtran}
- \usepackage[a4paper, marginparwidth=0.5in]{geometry}
+
+% Versão edição no LATEX
+\newcommand{\CLASSINPUTtoptextmargin}{2cm}
+\newcommand{\CLASSINPUTbottomtextmargin}{2cm}
+\documentclass[letter, onecolumn, 12pt]{IEEEtran} %journal
+
+
+% Versão para impressão com margem maior para escrita
+%  \documentclass[article,onecolumn, 11pt]{IEEEtran}
+%  \usepackage[a4paper, marginparwidth=0.3in, 11pt]{geometry}
 
 
 % \documentclass[journal,12pt,onecolumn]{IEEEtran}
@@ -18,7 +25,7 @@
 
 
 \usepackage[utf8]{inputenc}
-\usepackage{epstopdf}
+% \usepackage{epstopdf}
 %\usepackage[spanish]{babel}
 \usepackage[cmex10]{amsmath,nccmath}
 %\interdisplaylinepenalty=2500
@@ -36,10 +43,12 @@
 \usepackage{balance}
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{accents}
+\usepackage{enumerate} % http://ctan.org/pkg/enumerate
 \usepackage{blindtext}
 %\usepackage{soul}
 \usepackage[normalem]{ulem}
 \usepackage{pgf,tikz}
+% \usepackage{algpseudocode} 
 % \usepackage{subfigure}
 \usepackage{booktabs}
 \usetikzlibrary{arrows}
@@ -79,7 +88,13 @@
 
 
 \begin{abstract}
-	Producing Renewable Generation scenarios is a topic of interest in power system applications. as they are required for many different applications. 	In this work, we focus on generating future scenarios of wind power.  Most time series methods used to produce such forecasts rely on the assumption of Gaussian errors or Gaussian distribution, but most applications on power systems deals with nongaussian time series. Using a nonparametric approach such as Quantile Regression allows the statistical model to adapt to the data without requiring a distribution to be known \textit{a priori}. We develop in this paper the Quantile Regularized Adaptive LASSO (QRAL), a methodology which is based on the Adaptive LASSO for quantile regression with the addition of a second derivative filter, that explores the similarity of neighbour quantiles to reduce the noise in estimation and producing better estimations and simulations. A real case study comparing with different benchmarks in the literature, the QRAL was able to outperform them in terms of minimizing the Mean Absolute Percentile Error of future scenarios in recovering the historic monthly quantiles.
+	Producing probabilistic forecasts of Renewable Generation is a topic of interest in power system applications. In this work, we focus on generating future scenarios of wind power generation.  Most time series methods used to produce such forecasts rely on the assumption of Gaussian errors or Gaussian distribution, however applications on power systems deals with nongaussian time series.  
+	We develop, in this work, a nonparametric methodology based on Quantile Regression to estimate the conditional distribution function for monthly wind time series.  
+	The conditional distribution is formed by connecting an array of quantiles jointly estimated. 
+	Two different models are used to estimate the quantiles: (i) the model Quantile Regularized Adaptive LASSO (QRAL) and (ii) the Nonparametric Quantile Regression (NQR) model.
+	The QRAL implements two types of regularization. One is based on the Adaptive LASSO for selecting covariates within each Quantile Regression. The other emphasizes the connection across different quantiles, reflecting the fact that the quantile function should have smooth variation. Quantile function has to variate smoothly across quantiles and it is implemented by the addition of a second derivative filter, 
+exploring the similarity of neighbor quantiles. The NQR model allows nonlinear functions of its covariates. Each nonlinear function is a continuous function penalized by its second derivative.
+	A case study with realistic Wind Power data from the Brazilian Northeast compares the  with different benchmarks in the literature. The QRAL was able to outperform them in terms of minimizing the Mean Absolute Percentile Error of future scenarios in recovering the historic monthly quantiles. The NQR method is under development.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -87,7 +102,7 @@
 \end{IEEEkeywords}
 
 
-% \listoftodos
+%\listoftodos
 
 
 % ===== Sec. I - Introduction ===== %
@@ -97,6 +112,10 @@
 % ===== Sec. II - Quantile Regression ===== %
 %
 \input{ieee-quantile-regression.tex}
+
+
+\input{ieee-conditional-distribution}
+
 %
 %% ===== Sec. III - Implementation ===== %
 %
@@ -120,7 +139,7 @@
 
 %% ===== Sec. VI - Further Studies ===== %
 
- \input{ieee-further-studies.tex}
+%  \input{ieee-further-studies.tex}
 
 %% ===== Sec. - Conclusion ===== %
 %

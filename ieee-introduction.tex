@@ -8,8 +8,8 @@ In spite of its virtues, several new challenges are inherent when dealing with s
 
 %Many applications in Power Systems use renewable scenarios as input.
 %For all the aforementioned applications, the knowledge of the time series conditional distribution can provide all that needed information.
-New statistical models capable of handling such difficulties are an emerging field in power systems literature \cite{zhang_review_2014 , bessa2012time, gallego2016line,moller_time-adaptive_2008,nielsen2006,bremnes_probabilistic_2004,wan_direct_2017} 
-The main objective in such literature is to propose new models capable of generating scenarios of renewable generation (RG) which are demanded in (i) energy trading, (ii) unit commitment, (iii) grid expansion planning, and (iv) investment decisions (see (\cite{moreiraStreet,jabr2013robust,zhaoguan,Aderson2017}) and references therein). 
+New statistical models capable of handling such difficulties are an emerging field in power systems literature \cite{zhang_review_2014 , bessa2012time, gallego2016line,moller_time-adaptive_2008,nielsen2006,bremnes_probabilistic_2004,wan_direct_2017}. 
+The main objective in such literature is to propose new models capable of generating scenarios of renewable generation (RG) which are demanded in (i) energy trading, (ii) unit commitment, (iii) grid expansion planning, and (iv) investment decisions (see \cite{moreiraStreet,jabr2013robust,zhaoguan,Aderson2017} and references therein). 
 In stochastic optimization, problems such as Unit Commitment, Economic Dispatch, Transmission Expansion Planning all use scenarios as input. 
 Such scenarios are used to characterize the probability distribution within the optimization under uncertainty framework.
 When working with robust optimization, bounds for probable ranges of coefficients are needed.
@@ -20,24 +20,35 @@ When working with robust optimization, bounds for probable ranges of coefficient
 %Having better prediction models can help the planner to make better and less risky decisions, increasing the attractiveness of renewable energy to the energy system. 
 %In this work we will investigate how to model dynamics of renewable energy time series in both short and long terms.
  
-%%%%%%%% 2. Falar de Wind Power nos primordios. ARIMA e essas coisas
+%%%%%%%% 2. Falar de wind power nos primordios. ARIMA e essas coisas
 % Henrique faz Critics about point forecasts and gaussian models (ARIMA-GARCH). Compare GAS and nonparametric models.
 
 %% Eu faço a introdução ao probabilistic forecasting
 Conventional statistical models are often focused on estimating the conditional mean of a given random variable. % This is not very useful when dealing with renewable energy, as the variability and the notion of risk is extremely important for planning. - ver a distribuicao como um todo - reescrever
 %One of the first works in wind power prediction, \cite{brown_time_1984} treated the nonlinearity of wind power by applying a transformation on the prediction of wind speed, which is modeled by an autoregressive process. The data is standardized to account for the normal variation during the day.
 %\cite{moeanaddin_numerical_1990} estimated the $k$-step-ahead conditional density function using the Chapman-Kolmorov relation. The method is applied on a non-linear autoregressive time series.
-By reducing the outcome to a single statistic, we loose important informations about the time series random behavior. In order to account for the process inherent variability it is important to consider probability forecasting.
-In \cite{zhang_review_2014}, reviews the commonly used methodologies regarding probabilistic forecasting models, splitting them in parametric and nonparametric classes. Main characteristics of \textbf{parametric models} are (i) assuming a distribution shape and (ii) low computational costs. ARIMA-GARCH, for example, model the RG series by assuming the distribution \textit{a priori}. On the other hand, \textbf{nonparametric models} (i) don't require a distribution to be specified, (ii) needs more data to produce a good approximation and (iii) have a higher computational cost. Popular methods are Quantile Regression (QR), Kernel Density Estimation,  Artificial Intelligence or a mix of them.
-
-
+By reducing the outcome to a single statistic, important informations about the time series random behavior are lost. In order to account for the process inherent variability it is important to consider probability forecasting.
+In \cite{zhang_review_2014}, the commonly used methodologies regarding probabilistic forecasting models is reviewed, splitting them in parametric and nonparametric classes. Main characteristics of \textbf{parametric models} are (i) assuming a distribution shape and (ii) low computational costs. The ARIMA-GARCH model, for example, fits the RG series by assuming a distribution \textit{a priori}. On the other hand, \textbf{nonparametric models} (i) do not require a distribution to be specified, (ii) needs more data to produce a good approximation and (iii) have a higher computational cost. Popular methods are Quantile Regression (QR), Kernel Density Estimation,  Artificial Intelligence or a mix of them.
 %%%%%% 3. Falar da não-gaussianidade do WP e apresentar novas referências
 % Unir com parágrafo anterior??
 % Não gaussianidade dos dados de Fator de capacidade eólico 3 paragrafo HHH
-Most time series methods rely on the assumption of Gaussian errors. However, RG time series such as wind and solar are reported as non-Gaussian \cite{bessa2012time,jeon2012using,taylor2015forecasting,Wan2017}. To circumvent this problem, the usage of nonparametric methods - which does not rely on assuming any previously assumed distribution - is adequate. 
-Quantile Regression (QR) is a tool for constructing a methodology for non-gaussian time series, because of its facility to implement on commercial solvers and to extend the original model.
-However, when estimating a distribution function, as each quantile is estimated independently, the monotonicity of the distribution function may be violated.
-This issue - also known as crossing quantiles - can be adressed by constraining the sequence of quantiles to be in an increasing order. Other possibility is making a transformation afterwards, as shown in \cite{chernozhukov_quantile_2010}.
+Most time series methods rely on the assumption of Gaussian errors. However, RG time series such as wind and solar are reported as non-Gaussian \cite{bessa2012time,jeon2012using,taylor2015forecasting,Wan2017}. To circumvent this problem, the usage of nonparametric methods - which does not rely on assuming any previously assumed distribution - appears as a new alternative. 
+
+In order to simulate scenarios, not only the conditional mean is needed, but the whole conditional distribution. For example, if two random variables $X_1$ and $X_2$ have the same mean but the distribution of $X_2$ has fatter tails, then simulations from $X_2$ will present more extreme values than simulations from $X_1$. The knowledge of the scale becomes as important as the knowledge of the location when dealing with producing future scenarios. The procedure used for simulating future scenarios is by drawing, in each period $\tau$, a value for $\tau+1$ from the estimated conditional distribution function (CDF). Hence, having a good estimate of the CDF is essential to meet the goal in this work. 
+
+A possibility for constructing the CDF nonparametrically is by using a sequence of quantile values. By estimating many quantiles on a thin grid of probabilities over the interval $[0,1]$, one can have as many points as desired from an estimated CDF. The second step would be transforming this set of points into a continuous function by a interpolating method. 
+These quantile values may be estimated by a technique such as Quantile Regression (QR). 
+The seminal work \cite{koenker1978regression} defines QR as it is employed in many works \cite{chao_quantile_2012,li_quantile_2007,bosch_convergent_nodate,gallego2016line,moller_time-adaptive_2008,nielsen2006,bremnes_probabilistic_2004,wan_direct_2017}. The conditional quantile is the solution of an optimization problem where the sum of the check function (defined formally in the next session) is minimized. Instead of using the classical regression to estimate the conditional mean, QR determines any quantile from the conditional distribution. Applications are enormous, ranging from risk measuring at financial funds (the Value-at-Risk) to a central measure robust to outliers.
+
+
+
+
+% However, by simply joining an array of quantiles
+%QR is a tool for constructing a methodology for non-gaussian time series, because of its facility to implement on commercial solvers and to extend the original model.
+
+% However, when estimating a distribution function, as each quantile is estimated independently, the monotonicity of the distribution function may be violated.
+% This issue - also known as crossing quantiles - can be adressed by constraining the sequence of quantiles to be in an increasing order. Other possibility is making a transformation afterwards, as shown in \cite{chernozhukov_quantile_2010}.
+
 
 %
 %, as defined in \cite{koenker_quantile_2006}.
@@ -45,53 +56,71 @@ This issue - also known as crossing quantiles - can be adressed by constraining 
 %%%%% 4. Falar de regressao quantilica em geral. Onde é utilizada e etc.
 
 
-The seminal work \cite{koenker1978regression} defines QR as we use today. By this formulation, the conditional quantile is the solution of an optimization problem where we minimize the sum of the check function (defined formally in the next session). Instead of using the classical regression to estimate the conditional mean, the QR determines any quantile from the conditional distribution. Applications are enormous, ranging from risk measuring at financial funds (the Value-at-Risk) to a central measure robust to outliers.
-By estimating many quantiles on a thin grid of probabilities, one can have as many points as desired from the estimated conditional distribution function. 
-In \cite{koenker_quantile_2006}, the application of QR is extended to time series, when the covariates are lagged values of $y_t$.  
-In our work, beyond autoregressive terms, it is also considered other exogenous variables as covariates. 
+% In \cite{koenker_quantile_2006}, the application of QR is extended to time series, when the covariates are lagged values of $y_t$.  
+%In our work, beyond autoregressive terms, it is also considered other exogenous variables as covariates. 
 
 
 
 %%%%% 5. aplicações de QR em wind power, colocando os papers mais proximos.
 % colocar tb regressao quantilica com regularizacao
-In \cite{gallego2016line,moller_time-adaptive_2008,nielsen2006,bremnes_probabilistic_2004,wan_direct_2017}, QR is employed to model the conditional distribution of Wind Power Time Series.
+In \cite{gallego2016line,moller_time-adaptive_2008,nielsen2006,bremnes_probabilistic_2004,wan_direct_2017}, QR is employed to model the conditional distribution of wind power Time Series.
 An updating quantile regression model is presented by \cite{moller_time-adaptive_2008}. The authors present a modified version of the simplex algorithm to incorporate new observations without restarting the optimization procedure.
 %Using existing wind power forecasting to extend these forecasting to build a model of quantiles is the strategy adopted by \cite{nielsen2006}.
-In \cite{nielsen2006}, the authors build a quantile model from already existent independent Wind Power forecasts.
-The approach by \cite{gallego2016line} is to use QR with a nonparametric methodology. The authors add a penalty term based on the Reproducing Kernel Hilbert Space, which allows a nonlinear relationship between the explanatory variables and the output. This paper also develops an on-line learning technique, where the model is easily updated after each new observation.
+In \cite{nielsen2006}, the authors build a quantile model from already existent independent wind power forecasts.
+The approach by \cite{gallego2016line} is to use QR with a nonparametric methodology. The authors add a penalty term based on the Reproducing Kernel Hilbert Space, which allows a nonlinear relationship between the explanatory variables and the output. This work also develops an on-line learning technique, where the model is easily updated after each new observation.
 In \cite{wan_direct_2017}, wind power probabilistic forecasts are made by using QR with a special type of Neural Network (NN) with one hidden layer, called extreme learning machine. In this setup, each quantile is a different linear combination of the features of the hidden layer.
 The authors of \cite{cai_regression_2002} use the weighted Nadaraya-Watson to estimate the conditional function in the time series.
 
-Regularization is a topic already explored in previous QR papers.
-The work by \cite{belloni_l1-penalized_2009} defines the properties and convergence rates for QR when adding a penalty proportional to the $\ell_1$-norm to perform variable selection, using the same idea as the LASSO \cite{tibshirani1996regression}. The ADALASSO equivalent to QR has its properties investigated by \cite{ciuperca_adaptive_2016}. In this variant, the penalty for each variable has a different weight, and this modification ensures that the oracle property is being respected. 
-In \cite{zou_regularized_2008,jiang_interquantile_2014}, the AdaLASSO is employed to QR with multiple quantile regressions at the same time, relating the estimated coefficients of different quantiles.
+% \todoi{diferenca entre array de quantis e cdf}
 
-In this work we propose the use of a non parametric technique, which as already mentioned is free from user distribuitional specification, to simulate future scenarios of wind power generation. Such technique relies on a quantile autoregressive (QAR) framework in the same spirit as \cite{koenker1978regression,koenker_quantile_2006,koenker2005quantile}. Notwithstanding, as an innovation from the referenced works, in order to capture which variables would improve model fit, from a set of relevant ones, we propose the use of a LASSO cost function plus an interquantile term. Such term acts as a filter to impose coefficient stability for a given covariate across the set of quantiles. In addition, interquantile dependency is explored as in \cite{zou_regularized_2008,jiang_interquantile_2014}. As a second innovative feature of this work, we propose the inclusion of a penalization parameter in the second difference. We argue that such strategy avoids extreme quantiles to be shrinked to zero as fast as the central ones. For the best of the authors knowledge, no other work has developed a methodology where regularization and estimation of the conditional distribution using QR is carried on at the same time with the objective of generating future scenarios for WPG time series.
+
+% \todoi{melhorar parágrafo}
+% %In this work, we propose to estimate the CDF nonparametrically. The CDF is formed by jointly estimated quantiles
+% %Two methodologies are proposed, concerning the form of the quantile function: Linear Model and Nonparametric Quantile Regression.
+
+We propose a nonparametric methodology to estimate the CDF given autoregressive terms, with the goal of generating future scenarios of RG. This methodology is based on interpolating individual quantiles, where each quantile is estimated with Quantile Regression.
+Instead of having an independent model for each quantile, they are all connected in a single problem. All quantiles are jointly estimated by an unique model, whose aim is to estimate quantiles that would later form a CDF after interpolation. This ensures not only that the estimated CDF preserves monotonicity, but also that it is smooth, increasing the out-of-sample predictive assertivity.
+In this work, the QR may be estimated using two approaches: Quantile Regularized Adaptive LASSO (QRAL) and Nonparametric Quantile Regression (NQR). In both of them, quantiles are jointly estimated in order to build a more reliable distribution function. 
+% \todoi{Inserir gráfico com esquema}
+
+
+The method QRAL relies on a quantile autoregressive (QAR) framework in the same spirit of \cite{koenker1978regression,koenker_quantile_2006,koenker2005quantile}. Notwithstanding, as an innovation from the referenced works, in order to capture which variables would improve model fit, from a set of relevant ones, we propose the use of a LASSO cost function to select which lags are selected to be included in the model.
+Regularization is a topic already explored in previous QR works.
+The work by \cite{belloni_l1-penalized_2009} defines the properties and convergence rates for QR when adding a penalty proportional to the $\ell_1$-norm to perform variable selection, using the same idea as the LASSO \cite{tibshirani1996regression}. The AdaLASSO equivalent to QR has its properties investigated by \cite{ciuperca_adaptive_2016}. In this variant, the penalty for each variable has a different weight, and this modification ensures that the oracle property is being respected. 
+In \cite{zou_regularized_2008,jiang_interquantile_2014}, the AdaLASSO is employed to QR with multiple quantile regressions at the same time, using the interquantile dependency to improve the quantile coefficient estimation.
+As a second innovative feature of this work, we propose the inclusion of a penalization parameter of the second difference of quantile values. We argue that such strategy avoids extreme quantiles to be shrinked to zero as fast as the central ones. Such term acts as a filter to impose coefficient stability for a given covariate across the set of quantiles.
+For the best of the authors knowledge, no other work has developed a methodology where regularization and estimation of the conditional distribution using QR is carried on at the same time with the objective of generating future scenarios for WPG time series.
+
+
+On the NQR, nonlinearity is considered as an important feature for the model, despite issues come together with nonparametric statistics. Among these issues are slower convergence to the true parameters and  interpolation not straightforward in high dimension. The advantage of this method relative to the linear model is that it allows a nonlinear function of its covariates.  Nonparametric quantile function is extensively discussed in \cite{takeuchi_nonparametric_2006}, and \cite{gallego2016line } uses a nonlinear estimator for quantile functions for estimating wind power quantiles. 
+
+
+
 
 %The crossing quantile issue is solved by introducing a constraint on the optimization problems that forces the quantile function monotonicity. Furthermore, in the quantile regression literature for wind forecasting, a sequence of quantiles is provided as output. In our work, we propose to estimate the conditional distribution as a whole.
 
 
  
-%%%%%% 7. Objetivos do paper e contribuição
-The objective of this paper is, then, to propose a new methodology to address nonparametric time-series model focused on RG. This may be seen as a multiple quantile regression problem that specifies a time series model based on the empirical conditional distribution. The main contributions are:
+%%%%%% 7. Objetivos do work e contribuição
+The objective of this work is, then, to propose new methodologies to address simulating future RG scenarios. These methodologies are nonparametric and build the CDF from an array of jointly estimated quantiles, using a penalty which helps to estimate a more appropriate CDF. Two different forms of estimating quantiles are proposed: using linear models and nonparametric quantile regression. The methodology may be seen as a multiple quantile regression problem that specifies a time series model based on the empirical conditional distribution. The main contributions of this work are:
 \begin{itemize}
-	\item A nonparametric methodology to model the conditional distribution of RG time series to produce scenarios.
+	\item A nonparametric methodology to model, from a set of quantile estimations, the conditional distribution of RG time series to produce future scenarios.
 	
-	\item The proposition of a methodology that selects the global optimal solution with parsimony both on the selection of covariates as on the quantiles. This methodology is based on the Adaptive LASSO for QR (Linear Programming).
+	\item The proposition of two different procedures to jointly estimate quantiles: (i) A linear model that selects the global optimal solution with parsimony both on the selection of covariates as on the quantiles. This methodology is based on the Adaptive LASSO for QR (Linear Programming). (ii) A nonparametric quantile regression model, which has a free functional form, tuned by a penalty on how rough this function may be. 
 	
-	\item Regularization techniques applied to an ensemble of quantile functions to estimate the conditional distribution, solving the issue of non-crossing quantiles. On regularizing quantiles, we propose a smoothness on the coefficient value across the sequence of quantiles.	
+	\item Regularization techniques applied to an ensemble of quantile functions to estimate the conditional distribution, solving the issue of non-crossing quantiles. On regularizing quantiles, we propose a smoothness on the coefficient value across the sequence of quantiles.
 	%\item A nonlinear QR
 	
 \end{itemize}
 
 %We propose a new combination of methods to predict the $k$-step ahead conditional distribution. By using MILP, we achieve a solution which is optimal for the given objective. In order to improve the quality of predictions and interpretability, we incorporate a joint regularization by specifying the existence of groups among the probabilities $\alpha$. We could not find any other work in the literature that interpreted different quantiles as models depending on one another. 
-%The objective of this paper is to propose and test different techniques of predicting the conditional distribution based on QR. 
+%The objective of this work is to propose and test different techniques of predicting the conditional distribution based on QR. 
 
 
 % OBJETIVOS:
 %Um modelo para séries tmeporais autoregressivo e nao parametrico e baseado na função quantilica. No caso autoregressivo, uma metodologia de estimação com seleção parcimoniosa otima global é proposta e possibilita o controle dos números de grupos de regressores diferentes dentro do modelo para diferentes quantis. Para o modelo não paramétrico
 %Modelo data driven, empirico
 
-
+% \todoi{Inserir sumário das próximas seções}
 %%%%%% 8. Organização dos próximos capítulos OK
-The remaining of the paper is organized as follows. In section II, we present the quantile regression framework in which we build the model as well as introduce the Quantile Regression Adaptive LASSO. In section III, we discuss the estimation procedures for them. The regularization strategies are also presented on this section. Finally, in section IV, we present a few controlled studies with simulated data and a final case study using real data from wind power is presented in order to test our methodology. Section V will conclude this article.
+The remaining of this work is organized as follows. In section II, we present the quantile regression framework in which we build both QR methods we use in this work: the linear model and nonparametric. In section III, we discuss how to jointly estimate the methods presented in section II to produce the conditional distribution function. Section IV shows how to estimate the models, as well as computational issues regarding the estimation. In Section V, we present a few controlled studies with simulated data and a final case study using real data from wind power is presented in order to test our methodology. Section VI will conclude this article.
