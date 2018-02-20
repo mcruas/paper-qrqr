@@ -110,18 +110,39 @@ C.~Wan, J.~Lin, J.~Wang, Y.~Song, and Z.~Y. Dong, ``Direct quantile regression
   \emph{IEEE Transactions on Power Systems}, vol.~32, no.~4, pp. 2767--2778,
   July 2017.
 
-\bibitem{chernozhukov_quantile_2010}
-\BIBentryALTinterwordspacing
-V.~Chernozhukov, I.~Fernández-Val, and A.~Galichon,
-  ``\BIBforeignlanguage{en}{Quantile and {Probability} {Curves} {Without}
-  {Crossing}},'' \emph{\BIBforeignlanguage{en}{Econometrica}}, vol.~78, no.~3,
-  pp. 1093--1125, May 2010. [Online]. Available:
-  \url{http://onlinelibrary.wiley.com/doi/10.3982/ECTA7880/abstract}
-\BIBentrySTDinterwordspacing
-
 \bibitem{koenker1978regression}
 R.~Koenker and G.~Bassett~Jr, ``Regression quantiles,'' \emph{Econometrica:
   journal of the Econometric Society}, pp. 33--50, 1978.
+
+\bibitem{chao_quantile_2012}
+\BIBentryALTinterwordspacing
+S.-K. Chao, W.~K. Härdle, and W.~Wang, ``Quantile {Regression} in {Risk}
+  {Calibration},'' Social Science Research Network, Rochester, NY, {SSRN}
+  {Scholarly} {Paper} ID 2894219, Jan. 2012. [Online]. Available:
+  \url{https://papers.ssrn.com/abstract=2894219}
+\BIBentrySTDinterwordspacing
+
+\bibitem{li_quantile_2007}
+\BIBentryALTinterwordspacing
+Y.~Li, Y.~Liu, and J.~Zhu, ``Quantile {Regression} in {Reproducing} {Kernel}
+  {Hilbert} {Spaces},'' \emph{Journal of the American Statistical Association},
+  vol. 102, no. 477, pp. 255--268, 2007. [Online]. Available:
+  \url{http://www.jstor.org/stable/27639837}
+\BIBentrySTDinterwordspacing
+
+\bibitem{bosch_convergent_nodate}
+\BIBentryALTinterwordspacing
+Bosch, ``A convergent algorithm for quantile regression with smoothing splines
+  - {ScienceDirect}.'' [Online]. Available:
+  \url{http://www.sciencedirect.com/science/article/pii/016794739400018E}
+\BIBentrySTDinterwordspacing
+
+\bibitem{cai_regression_2002}
+\BIBentryALTinterwordspacing
+Z.~Cai, ``Regression {Quantiles} for {Time} {Series},'' \emph{Econometric
+  Theory}, vol.~18, no.~1, pp. 169--192, 2002. [Online]. Available:
+  \url{http://www.jstor.org/stable/3533031}
+\BIBentrySTDinterwordspacing
 
 \bibitem{koenker_quantile_2006}
 \BIBentryALTinterwordspacing
@@ -132,12 +153,9 @@ R.~Koenker, Z.~Xiao, J.~Fan, Y.~Fan, M.~Knight, M.~Hallin, B.~J.~M. Werker,
   \url{http://www.jstor.org/stable/27590777}
 \BIBentrySTDinterwordspacing
 
-\bibitem{cai_regression_2002}
-\BIBentryALTinterwordspacing
-Z.~Cai, ``Regression {Quantiles} for {Time} {Series},'' \emph{Econometric
-  Theory}, vol.~18, no.~1, pp. 169--192, 2002. [Online]. Available:
-  \url{http://www.jstor.org/stable/3533031}
-\BIBentrySTDinterwordspacing
+\bibitem{koenker2005quantile}
+R.~Koenker, \emph{Quantile regression}.\hskip 1em plus 0.5em minus 0.4em\relax
+  Cambridge university press, 2005, no.~38.
 
 \bibitem{belloni_l1-penalized_2009}
 \BIBentryALTinterwordspacing
@@ -175,9 +193,13 @@ L.~Jiang, H.~D. Bondell, and H.~J. Wang, ``Interquantile shrinkage and variable
   \url{http://www.sciencedirect.com/science/article/pii/S0167947313002922}
 \BIBentrySTDinterwordspacing
 
-\bibitem{koenker2005quantile}
-R.~Koenker, \emph{Quantile regression}.\hskip 1em plus 0.5em minus 0.4em\relax
-  Cambridge university press, 2005, no.~38.
+\bibitem{takeuchi_nonparametric_2006}
+\BIBentryALTinterwordspacing
+I.~Takeuchi, Q.~V. Le, T.~D. Sears, and A.~J. Smola, ``Nonparametric {Quantile}
+  {Estimation},'' \emph{J. Mach. Learn. Res.}, vol.~7, pp. 1231--1264, Dec.
+  2006. [Online]. Available:
+  \url{http://dl.acm.org/citation.cfm?id=1248547.1248592}
+\BIBentrySTDinterwordspacing
 
 \bibitem{efroymson1960multiple}
 M.~Efroymson, ``Multiple regression analysis,'' \emph{Mathematical methods for
@@ -214,9 +236,5 @@ C.~Bergmeir and J.~M. Benítez, ``On the use of cross-validation for time
   192--213, May 2012. [Online]. Available:
   \url{http://www.sciencedirect.com/science/article/pii/S0020025511006773}
 \BIBentrySTDinterwordspacing
-
-\bibitem{machado1993robust}
-J.~A. Machado, ``Robust model selection and m-estimation,'' \emph{Econometric
-  Theory}, vol.~9, pp. 478--493, 1993.
 
 \end{thebibliography}

@@ -4,3 +4,13 @@
 *.gz
 *.blg
 *.log
+main.bbl
+main.fdb_latexmk
+main.fls
+main.tdo
+.vscode/settings.json
+.gitignore
+main.fdb_latexmk
+main.fls
+ieee qrqr.code-workspace
+.vscode/settings.json

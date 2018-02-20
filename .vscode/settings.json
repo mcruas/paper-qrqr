@@ -1,6 +1,5 @@
 {
-    "cSpell.words": [
-        "autoregressive",
-        "interquartile"
-    ]
+    "editor.minimap.enabled": false,
+    "editor.wordWrap": "on",
+    "editor.fontSize": 13
 }

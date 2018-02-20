@@ -1,0 +1,61 @@
+% ! Contribuições do trabalho
+
+We proprose a nonparametric methodology to (levantar) the conditional distribution function given autoregressive terms. This methodology is based on interpolating individual quantiles, where each quantile is estimated with Quantile Regression. In this work, QR regression may be estimated using two approaches: linear model and nonparametric. In both of them, quantiles are not estimated independently, but jointly estimated in order to build a more reliable distribution function. Not only monotonicity, but being smooth is also desired for a continuous random vavriable distribution function.
+
+
+conditional distribution Function from an array of quantiles. Each quantile is a function of autoregressive terms.
+
+
+
+[Construir a ideia de uma distribuicao nao gaussiana -> nao parametrica]
+
+Estimating an array of individual quantiles has a problem that they do not always form a distribution function, as it may have decreasing intervals or present abrupt changes. When 
+ 
+
+In order to reach the desirable property of parsimony, we use the AdaLASSO to select convariates.
+
+ 
+Buraco na literatura: nonparametric conditional distribution model based on QR 
+
+One way of constructing the nonparametric conditional distribution is by estimating a discretized function and connecting the individual quantiles as a second step. QR is a regression which has an individual quantile as dependent variable. Quantile Autoregression is the case where the quantile is function of autoregressive terms. 
+
+
+TENHO
+
+- blablabla inicial
+- parametric x nonparametric
+- gaussian errors. rg nao eh gaussian
+- (colocar) distribuicao condicional para fazer a simulacao
+- possibilidade de construir distribuição condicional nao parametricamente. usa quantis q estima por QR
+- QR em wind power
+- Regularization in QR no modelo linear
+- Use Nonparametric technique. Two models: linear and nonparametric
+- Explica linear model. Fala de inovacoes do linear model
+- Explica nonparametric QR
+- (construir) diferença entre um conjunto de quantis para um conjunto de quantis pensados para ser uma CDF.
+- objetivos
+
+FICAR
+
+- blablabla inicial
+- parametric x nonparametric
+- gaussian errors. rg nao eh gaussian
+- (colocar1) distribuicao condicional para fazer a simulacao
+- possibilidade de construir distribuição condicional nao parametricamente. usa quantis q estima por QR
+- QR em wind power
+- (construir2) diferença entre um conjunto de quantis para um conjunto de quantis pensados para ser uma CDF.
+- Use Nonparametric technique. Two models: linear and nonparametric
+- Explica linear model. Fala de inovacoes do linear model
+- Regularization in QR no modelo linear
+- Explica nonparametric QR
+- objetivos
+
+C1) In order to simulate scenarios, not only the conditional mean is needed, but the whole conditional distribution. For example, if two random variables X1 and X2 have the same mean but X2 has fatter tails, than it is expected to be more extreme values for X2 than X1. The knowledge of scale becomes as important as the knowledge of location when dealing with producing future scenarios.  Thus, having a good estimate of the conditional dostribution is essential to meet the goal in this work. 
+
+C2) A sequence of quantiles independently estimated, as in regular QR, are not the best estimates to use as input to produce the CDF as this sequence of quantiles may produce a non-monotonic CDF or a nonsmooth curve. The methodology developed in this work estimates 
+
+We propose to estimate an array of quantiles that are connected with each other by the penalization of the second derivative and a noncrossing constraint, resulting in a unique model for the distribution. 
+
+An array of quantiles can be estimated using either one of these two methodologies. For this array to become a 
+
+From this array to produce a smooth and monotonic Distribution function, 
