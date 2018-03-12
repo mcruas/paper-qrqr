@@ -1,11 +1,11 @@
 %% Versão final IEEE
-%  \documentclass[journal]{IEEEtran}
+ \documentclass[journal]{IEEEtran}
 
 
 % Versão edição no LATEX
-\newcommand{\CLASSINPUTtoptextmargin}{2cm}
-\newcommand{\CLASSINPUTbottomtextmargin}{2cm}
-\documentclass[letter, onecolumn, 12pt]{IEEEtran} %journal
+% \newcommand{\CLASSINPUTtoptextmargin}{2cm}
+% \newcommand{\CLASSINPUTbottomtextmargin}{2cm}
+% \documentclass[letter, onecolumn, 12pt]{IEEEtran} %journal
 
 
 % Versão para impressão com margem maior para escrita
@@ -88,13 +88,13 @@
 
 
 \begin{abstract}
-	Producing probabilistic forecasts of Renewable Generation is a topic of interest in power system applications. In this work, we focus on generating future scenarios of wind power generation.  Most time series methods used to produce such forecasts rely on the assumption of Gaussian errors or Gaussian distribution, however applications on power systems deals with nongaussian time series.  
+	Producing probabilistic forecasts for renewable generation is a topic of interest in power system applications. In this work, we focus on generating future scenarios of wind power generation.  Most time series methods used to produce such forecasts rely on the assumption of Gaussian errors or conditional Gaussian distribution, however real life applications on power systems require proper modeling of nongaussian time series.  
 	We develop, in this work, a nonparametric methodology based on Quantile Regression to estimate the conditional distribution function for monthly wind time series.  
 	The conditional distribution is formed by connecting an array of quantiles jointly estimated. 
-	Two different models are used to estimate the quantiles: (i) the model Quantile Regularized Adaptive LASSO (QRAL) and (ii) the Nonparametric Quantile Regression (NQR) model.
-	The QRAL implements two types of regularization. One is based on the Adaptive LASSO for selecting covariates within each Quantile Regression. The other emphasizes the connection across different quantiles, reflecting the fact that the quantile function should have smooth variation. Quantile function has to variate smoothly across quantiles and it is implemented by the addition of a second derivative filter, 
+	Two different models are used to estimate the quantiles: (i) the Quantile Regularized Adaptive LASSO (QRAL) model and (ii) the Nonparametric Quantile Regression (NQR) model.
+	The QRAL implements two types of regularization. One is based on the Adaptive LASSO for selecting covariates within each Quantile Regression. The other emphasizes the connection across different quantiles, reflecting the fact that the quantile function should have smooth variation,
 exploring the similarity of neighbor quantiles. The NQR model allows nonlinear functions of its covariates. Each nonlinear function is a continuous function penalized by its second derivative.
-	A case study with realistic Wind Power data from the Brazilian Northeast compares the  with different benchmarks in the literature. The QRAL was able to outperform them in terms of minimizing the Mean Absolute Percentile Error of future scenarios in recovering the historic monthly quantiles. The NQR method is under development.
+	A case study with realistic wind power data from the Brazilian Northeast compares the developed models with different benchmarks in the literature. The methods were able to outperform them in terms of minimizing the Mean Absolute Percentile Error of future scenarios in recovering the historic monthly quantiles. The NQR method is under development.
 \end{abstract}
 
 \begin{IEEEkeywords}
