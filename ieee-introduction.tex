@@ -1,6 +1,6 @@
 \section{Introduction}
 
-%%%%%%% 1. Talk about renewable energy and its variability - motivacao da importancia do estudo da probability forecasting OK
+% = 1. Talk about renewable energy and its variability - motivacao da importancia do estudo da probability forecasting OK
 
 Renewable energy power is an emergent topic which is demanding attention from the academic community. %It is a much cleaner way of producing energy than by using other sources such as coal and gas, and with less hazard potential than nuclear power plants. 
 The installed capacity of renewable energy plants has been increasing in a fast pace and projections point out that wind power alone will account for 18\% of global power by 2050 \cite{IntEnerAgency}.
@@ -71,17 +71,13 @@ The approach by \cite{gallego2016line} is to use QR with a nonparametric method.
 In \cite{wan_direct_2017}, wind power probabilistic forecasts are made by using QR with a special type of neural network (NN) with one hidden layer, called extreme learning machine. In this setup, each quantile is a different linear combination of the features of the hidden layer.
 The authors of \cite{cai_regression_2002} use a weighted Nadaraya-Watson to estimate the conditional function in the time series.
 
-Regularization is a topic already explored in previous QR papers.
-The work by \cite{belloni_l1-penalized_2009} defines the properties and convergence rates for QR when adding a penalty proportional to the $\ell_1$-norm to perform variable selection, using the same idea as the LASSO \cite{tibshirani1996regression}. The ADALASSO equivalent to QR has its properties investigated by \cite{ciuperca_adaptive_2016}. In this variant, the penalty for each variable has a different weight, and this modification ensures that the oracle property is being respected. 
-In \cite{zou_regularized_2008,jiang_interquantile_2014}, the AdaLASSO is employed to QR with multiple quantile regressions at the same time, relating the estimated coefficients of different quantiles.
-
 
 We propose a nonparametric methodology to estimate the CDF given autoregressive terms, with the goal of generating future scenarios of RG. This methodology is based on interpolating individual quantiles, where each quantile is estimated via Quantile Regression framework.
 Instead of having an independent model for each quantile, they are all connected in a single problem. All quantiles are jointly estimated by an unique model, whose aim is to estimate quantiles that would later form a CDF after interpolation. This ensures not only that the estimated CDF preserves monotonicity, but also that it is smooth, increasing the out-of-sample predictive assertivity.
 In this work, the QR may be estimated using an approach developped in this work named Quantile Regularized Adaptive LASSO (QRAL).
 
 
-QRAL relies on a quantile autoregressive (QAR) framework in the same spirit of \cite{koenker1978regression,koenker_quantile_2006,koenker2005quantile}. Notwithstanding, as an innovation from the referenced works, in order to capture which variables would improve model fit, from a set of candidate variables, we propose the use of a LASSO cost function to select the lags to be included in the model.
+QRAL relies on a quantile autoregressive (QAR) framework in the same spirit of \cite{koenker1978regression,koenker_quantile_2006,koenker2005quantile}. In order to capture which variables would improve model fit, from a set of candidate variables, we propose the use of a LASSO cost function to select the lags to be included in the model.
 Regularization is a topic already explored in previous QR works.
 The work by \cite{belloni_l1-penalized_2009} defines the properties and convergence rates for QR when adding a penalty proportional to the $\ell_1$-norm to perform variable selection, using the same idea as the LASSO \cite{tibshirani1996regression}. The AdaLASSO equivalent to QR has its properties investigated by \cite{ciuperca_adaptive_2016}. In this variant, the penalty for each variable has a different weight, and this modification ensures that the oracle property is being respected. % todo citar belloni apecendo o nome(?)
 In \cite{zou_regularized_2008,jiang_interquantile_2014}, the AdaLASSO is employed to QR with multiple quantile regressions at the same time, using the interquantile dependence to improve  quantile coefficients estimation.
@@ -98,7 +94,7 @@ For the best of the authors knowledge, no other work has developed a methodology
 
  
 %%%%%% 7. Objetivos do work e contribuição
-The objective of this work is, then, to propose new methodologies to address simulating future RG scenarios. These methodologies are nonparametric and build the CDF from an array of jointly estimated quantiles, using a penalty which helps to estimate a more appropriate CDF. Two different forms of estimating quantiles are proposed: using linear models and nonparametric quantile regression. The methodology may be seen as a multiple quantile regression problem that specifies a time series model based on the empirical conditional distribution. The main contributions of this work are:
+The objective of this work is, then, to propose a new methodology to address simulating future RG scenarios. This methodology is nonparametric and builds the CDF from an array of jointly estimated quantiles, using a penalty which helps to estimate a more appropriate CDF. The methodology may be seen as a multiple linear quantile regression problem that specifies a time series model based on the empirical conditional distribution. The main contributions of this work are:
 \begin{itemize}
 	\item A nonparametric methodology to model, from a set of quantile estimations, the conditional distribution of RG time series to produce future scenarios.
 	
@@ -119,4 +115,4 @@ The objective of this work is, then, to propose new methodologies to address sim
 
 % \todoi{Inserir sumário das próximas seções}
 %%%%%% 8. Organização dos próximos capítulos OK
-The remainder of this work is organized as follows. In section II, we present the quantile regression framework and the Quantile Regularized adaptive LASSO. In section III, we discuss the estimation procedures for them. The regularization strategies are also presented on this section. Finally, in section IV, we present a few controlled studies with simulated data and a final case study using real data from wind power is presented in order to test our methodology. Section V will conclude this article.
+The remainder of this work is organized as follows. In section II, we present the quantile regression framework and the Quantile Regularized adaptive LASSO. In section III we discuss how to jointly estimate the QRAL in order to form a CDF. Section IV shows how to estimate the model, as well as computational issues regarding the estimation and evaluation. In Section V, in order to test our methodology, we present a few controlled studies with sumulated data and a final case study using real data from wind power. Section VI will conclude this article.

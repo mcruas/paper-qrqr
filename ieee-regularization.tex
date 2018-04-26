@@ -16,8 +16,8 @@ This normalization process is a linear transformation to each covariate such tha
 We apply the transformation $\tilde{x}_{t,p} = (x_{t,p} - \bar{x}_{t,p}) / \hat\sigma_{x_{t,p}}$, where $\bar{x}_{t,p}$ and $\hat{\sigma}_{x_{t,p}}$ are respectively the sample's unconditional mean and standard deviation. The $\tilde{y}_{t-p,i}$ series will be used to estimate the coefficients, as this series has the desired properties.} are input on the following optimization problem:
 \begin{IEEEeqnarray}{lr}
 \tilde \beta_\lambda^{*} = \underset{\beta_{0j},\beta_j,\varepsilon_{t j}^{+},\varepsilon_{t j}^{-}}{\text{arg min}} \sum_{j \in J} \left( \sum_{t \in T}(\alpha_j\varepsilon_{t j}^{+}+(1-\alpha_j)\varepsilon_{t j}^{-}) \right. \span \nonumber \\
-\span \left. +\lambda\sum_{p \in P} (\xi^+_{pj} + \xi^-_{pj}) \right)   \label{eq:obj-lasso} \\
-\mbox{subject to } \nonumber & \\
+\span \left. +\lambda\sum_{p \in P} (\xi^+_{pj} + \xi^-_{pj}) \right),   \label{eq:obj-lasso} \\
+\mbox{subject to: } \nonumber & \\
 \varepsilon_{t j}^{+}-\varepsilon_{t j}^{-}=y_{t}-\beta_{0 j}-\beta_{j}^T x_{t},& \forall t \in T ,\forall j \in J,\\
 \xi^+_{pj} - \xi^-_{pj} = \beta_{p j},&\forall p\in P, \forall j \in J,  \label{l1-qar-3}
 \\
@@ -51,9 +51,9 @@ Hence, we have that, for each $p \in \{ 1,\dots,P \}$,
 $$\beta^{*LASSO}_{\lambda,p} = 0 \Longrightarrow \beta^{*}_{\lambda,p} = 0.$$
 
 On the second stage, the optimal coefficient vector $\tilde \beta_\lambda^{*}$ is estimated by the non-regularized QR, where only variables that belongs to $S_\lambda$ are input:
-\begin{IEEEeqnarray*}{lr} (\mathcal{L}_{\lambda}^{*},\beta_{\lambda}^{*})\overset{(obj,var)}{\longleftarrow} \underset{\beta_{0j},\beta_j,z_{p j}, \varepsilon_{t j}^{+},\varepsilon_{t j}^{-}}{\text{min}} \sum_{j \in J}  \sum_{t\in T}\left(\alpha_j \varepsilon_{t j}^{+}+(1-\alpha_j)\varepsilon_{tj}^{-}\right) \span \nonumber
+\begin{IEEEeqnarray*}{lr} (\mathcal{L}_{\lambda}^{*},\beta_{\lambda}^{*})\overset{(obj,var)}{\longleftarrow} \underset{\beta_{0j},\beta_j,z_{p j}, \varepsilon_{t j}^{+},\varepsilon_{t j}^{-}}{\text{min}} \sum_{j \in J}  \sum_{t\in T}\left(\alpha_j \varepsilon_{t j}^{+}+(1-\alpha_j)\varepsilon_{tj}^{-}\right), \span \nonumber
 \\
-\text{subject to } \span \nonumber \\
+\text{subject to: } \span \nonumber \\
 \varepsilon_{t j}^{+}-\varepsilon_{t j}^{-}=y_{t} - \beta_{0\alpha} - \sum_{p\in S_\lambda} \beta_p x_{t,p}, & \forall t \in T, \forall j \in J, \\
 \span \forall j \in J_{(-1)}, \forall p\in P, \\
 \beta_{0j} + \beta_{j}^T x_{t} \leq \beta_{0,j+1} + \beta_{j+1}^T x_{t}, & \forall t \in T, \forall j \in J_{(-1)},\\
