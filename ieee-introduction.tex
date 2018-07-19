@@ -1,4 +1,4 @@
-\section{Introduction}
+\section{Introduction} \label{sec:introduction}
 
 % = 1. Talk about renewable energy and its variability - motivacao da importancia do estudo da probability forecasting OK
 
@@ -8,10 +8,10 @@ In spite of its virtues, several new challenges are inherent when dealing with s
 
 %Many applications in Power Systems use renewable scenarios as input.
 %For all the aforementioned applications, the knowledge of the time series conditional distribution can provide all that needed information.
-New statistical models capable of handling such difficulties are an emerging field in power systems literature \cite{bessa2012time, gallego2016line,moller_time-adaptive_2008,nielsen2006,bremnes_probabilistic_2004,wan_direct_2017}. 
-The main objective in such literature is to propose new models capable of generating scenarios of renewable generation (RG) which are demanded in (i) energy trading, (ii) unit commitment, (iii) grid expansion planning, and (iv) investment decisions (see \cite{moreiraStreet,jabr2013robust,zhaoguan,Aderson2017} and references therein). 
-In stochastic optimization, problems such as Unit Commitment, Economic Dispatch, Transmission Expansion Planning all use scenarios as input. 
-Such scenarios are used to characterize the probability distribution within the optimization under uncertainty framework.
+New statistical models capable of handling such difficulties are an emerging field in power systems literature. See, for example, \cite{bessa2012time, gallego2016line,moller_time-adaptive_2008,nielsen2006,bremnes_probabilistic_2004,wan_direct_2017}. 
+The main objective in such literature is to propose new models capable of generating scenarios of renewable generation (RG) time series which are demanded in (i) energy trading, (ii) unit commitment, (iii) grid expansion planning, and (iv) investment decisions (see \cite{moreiraStreet,jabr2013robust,zhaoguan,Aderson2017} and references therein). 
+In stochastic optimization, problems such as unit commitment, economic dispatch, transmission expansion planning all use scenarios as input. 
+such scenarios are used to characterize the probability distribution within the optimization under uncertainty framework.
 When working with robust optimization, bounds for probable ranges of coefficients are needed.
 
 %%%%%% 1.b. Continuar 
@@ -28,11 +28,11 @@ Conventional statistical models are often focused on estimating the conditional 
 %One of the first works in wind power prediction, \cite{brown_time_1984} treated the nonlinearity of wind power by applying a transformation on the prediction of wind speed, which is modeled by an autoregressive process. The data is standardized to account for the normal variation during the day.
 %\cite{moeanaddin_numerical_1990} estimated the $k$-step-ahead conditional density function using the Chapman-Kolmorov relation. The method is applied on a non-linear autoregressive time series.
 By reducing the outcome to a single statistic, important information about the time series random behavior is lost. In order to account for the process inherent variability, it is important to consider probability forecasting.
-In \cite{zhang_review_2014}, the commonly used methodologies regarding probabilistic forecasting models is reviewed, splitting them in parametric and nonparametric classes. The main characteristics of \textbf{parametric models} are (i) assuming a distribution shape and (ii) low computational costs. The ARIMA-GARCH model, for example, fits the RG series by assuming \textit{a priori} a Gaussian distribution . On the other hand, \textbf{nonparametric models} have the following characteristics: (i) do not require a distribution to be specified, (ii) needs more data to produce a good approximation and (iii) have a higher computational cost. Popular methods are Quantile Regression (QR), Kernel Density Estimation,  Artificial Intelligence or a mix of them.
+In \cite{zhang_review_2014}, the commonly used methodologies regarding probabilistic forecasting models is reviewed, splitting them in parametric and nonparametric classes. The main characteristics of \textbf{parametric models} are (i) assuming a distribution shape and (ii) low computational costs. The ARIMA-GARCH model, for example, fits the RG series by assuming \textit{a priori} a Gaussian distribution. On the other hand, \textbf{nonparametric models} have the following characteristics: (i) do not require a distribution to be specified, (ii) needs more data to produce a good approximation and (iii) have a higher computational cost. Popular methods are quantile regression (qr), kernel density estimation,  artificial intelligence or a mix of them.
 %%%%%% 3. Falar da não-gaussianidade do WP e apresentar novas referências
 % Unir com parágrafo anterior??
 % Não gaussianidade dos dados de Fator de capacidade eólico 3 paragrafo HHH
-Most time series methods rely on the assumption of Gaussian errors. However, RG time series such as wind and solar are reported as non-Gaussian \cite{bessa2012time,jeon2012using,taylor2015forecasting,Wan2017}. To circumvent this problem, the usage of nonparametric methods - which does not rely on assuming any distribution - appears as a new alternative. 
+Most time series methods rely on the assumption of Gaussian errors. However, RG time series such as wind and solar are reported as non-Gaussian \cite{bessa2012time,jeon2012using,taylor2015forecasting,Wan2017}. To circumvent this problem, the usage of nonparametric methods - which does not rely on distribution assumption - appears as a new alternative. 
 
 In order to simulate scenarios, not only the conditional mean is needed, but the whole conditional distribution. For example, if two random variables $X_1$ and $X_2$ have the same mean but the distribution of $X_2$ has fatter tails, then simulations from $X_2$ will present more extreme values than simulations from $X_1$. The knowledge of the scale becomes as important as the knowledge of the location when producing future scenarios. The procedure used for simulating future scenarios is by drawing, in each period $\tau$, a value for $\tau+1$ from the estimated conditional distribution function (CDF). Hence, having a good estimate of the CDF is essential to meet the goal in this work. 
 
@@ -67,21 +67,21 @@ In \cite{gallego2016line,moller_time-adaptive_2008,nielsen2006,bremnes_probabili
 An updating quantile regression model is presented by \cite{moller_time-adaptive_2008}. The authors present a modified version of the simplex algorithm to incorporate new observations without restarting the optimization procedure.
 %Using existing wind power forecasting to extend these forecasting to build a model of quantiles is the strategy adopted by \cite{nielsen2006}.
 In \cite{nielsen2006}, the authors build a quantile model from already existent independent wind power forecasts.
-The approach by \cite{gallego2016line} is to use QR with a nonparametric method. The authors add a penalty term based on the reproducing kernel Hilbert space, which allows a nonlinear relationship between the explanatory variables and the output. This work also develops an on-line learning technique, where the model is easily updated after each new observation arrives.
+The approach by \cite{gallego2016line} is to use QR with a nonparametric method. The authors add a penalty term based on the reproducing kernel Hilbert space, which allows a nonlinear relationship between the explanatory variables and the output. That work also develops an on-line learning technique, where the model is easily updated after each new observation arrives.
 In \cite{wan_direct_2017}, wind power probabilistic forecasts are made by using QR with a special type of neural network (NN) with one hidden layer, called extreme learning machine. In this setup, each quantile is a different linear combination of the features of the hidden layer.
 The authors of \cite{cai_regression_2002} use a weighted Nadaraya-Watson to estimate the conditional function in the time series.
 
 
-We propose a nonparametric methodology to estimate the CDF given autoregressive terms, with the goal of generating future scenarios of RG. This methodology is based on interpolating individual quantiles, where each quantile is estimated via Quantile Regression framework.
-Instead of having an independent model for each quantile, they are all connected in a single problem. All quantiles are jointly estimated by an unique model, whose aim is to estimate quantiles that would later form a CDF after interpolation. This ensures not only that the estimated CDF preserves monotonicity, but also that it is smooth, increasing the out-of-sample predictive assertivity.
-In this work, the QR may be estimated using an approach developped in this work named Quantile Regularized Adaptive LASSO (QRAL).
+We propose a nonparametric methodology to estimate the CDF given autoregressive terms, with the goal of generating future scenarios of RG. This methodology is based on interpolating individual quantiles, where each quantile is estimated via quantile regression framework.
+Instead of having an independent model for each quantile, quantiles are jointly estimated by an unique model, whose aim is to estimate quantiles that would later form a CDF after interpolation. This ensures not only that the estimated CDF preserves monotonicity, but also that it is smooth, increasing the out-of-sample predictive assertivity.
+In our work, the QR may be estimated using an approach developped here \todo{here?} named Quantile Regularized Adaptive LASSO (QRAL).
 
 
 QRAL relies on a quantile autoregressive (QAR) framework in the same spirit of \cite{koenker1978regression,koenker_quantile_2006,koenker2005quantile}. In order to capture which variables would improve model fit, from a set of candidate variables, we propose the use of a LASSO cost function to select the lags to be included in the model.
 Regularization is a topic already explored in previous QR works.
 The work by \cite{belloni_l1-penalized_2009} defines the properties and convergence rates for QR when adding a penalty proportional to the $\ell_1$-norm to perform variable selection, using the same idea as the LASSO \cite{tibshirani1996regression}. The AdaLASSO equivalent to QR has its properties investigated by \cite{ciuperca_adaptive_2016}. In this variant, the penalty for each variable has a different weight, and this modification ensures that the oracle property is being respected. % todo citar belloni apecendo o nome(?)
-In \cite{zou_regularized_2008,jiang_interquantile_2014}, the AdaLASSO is employed to QR with multiple quantile regressions at the same time, using the interquantile dependence to improve  quantile coefficients estimation.
-As a second innovative feature of this work, we propose the inclusion of a penalization parameter of the second difference of quantile values. We argue that such strategy avoids extreme quantiles to be shrinked to zero as fast as the central ones. Such term acts as a filter to impose coefficient stability for a given covariate across the set of quantiles.
+In \cite{zou_regularized_2008,jiang_interquantile_2014}, the AdaLASSO is employed in QR with multiple quantile regressions at the same time, using the interquantile dependence to improve  quantile coefficients estimation.
+As a second innovative feature of our work, we propose the inclusion of a penalization parameter of the second difference of quantile values. We argue that such strategy avoids extreme quantiles to be shrinked to zero as fast as the central ones. Such term acts as a filter to impose coefficient stability for a given covariate across the set of quantiles.
 For the best of the authors knowledge, no other work has developed a methodology where regularization and estimation of the conditional distribution using QR is carried on at the same time with the objective of generating future scenarios for WPG time series.
 
 
@@ -94,7 +94,7 @@ For the best of the authors knowledge, no other work has developed a methodology
 
  
 %%%%%% 7. Objetivos do work e contribuição
-The objective of this work is, then, to propose a new methodology to address simulating future RG scenarios. This methodology is nonparametric and builds the CDF from an array of jointly estimated quantiles, using a penalty which helps to estimate a more appropriate CDF. The methodology may be seen as a multiple linear quantile regression problem that specifies a time series model based on the empirical conditional distribution. The main contributions of this work are:
+The objective of this work is, then, to propose a new methodology to address simulating future RG scenarios. This methodology is nonparametric and builds the CDF from an array of jointly estimated quantiles, using a penalty which helps to estimate a more appropriate CDF. The methodology may be seen as a multiple linear quantile autoregression problem that specifies a time series model based on the empirical conditional distribution. The main contributions of this work are:
 \begin{itemize}
 	\item A nonparametric methodology to model, from a set of quantile estimations, the conditional distribution of RG time series to produce future scenarios.
 	
@@ -115,4 +115,4 @@ The objective of this work is, then, to propose a new methodology to address sim
 
 % \todoi{Inserir sumário das próximas seções}
 %%%%%% 8. Organização dos próximos capítulos OK
-The remainder of this work is organized as follows. In section II, we present the quantile regression framework and the Quantile Regularized adaptive LASSO. In section III we discuss how to jointly estimate the QRAL in order to form a CDF. Section IV shows how to estimate the model, as well as computational issues regarding the estimation and evaluation. In Section V, in order to test our methodology, we present a few controlled studies with sumulated data and a final case study using real data from wind power. Section VI will conclude this article.
+The remainder of this work is organized as follows. In Section II, we present the quantile regression framework and the quantile regularized adaptive LASSO (QRAL). In Section III we discuss how to jointly estimate the QRAL in order to form a CDF. Section IV shows how to estimate the model, as well as computational issues regarding the estimation and evaluation. In Section V, in order to test our methodology, we present few controlled studies with simulated data and a final case study using real data from wind power. Section VI concludes.

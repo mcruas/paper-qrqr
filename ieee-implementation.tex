@@ -1,11 +1,19 @@
 \section{Estimation, Evaluation and Simulation procedure} \label{sec:estimation-evaluation-simulation}
 
-This section presents computational aspects of the estimation, such as presenting the mathematical programming formulation of both the linear and the nonparametric models, presenting the evaluation metric and the cross-validation methodology
-%, which is essential in the process of building the function $\hat{Q}_{y_\tau|X}(\alpha)$.
-and the simulation procedure to produce future scenarios of Wind Power.
-The methodology is implemented in R and Julia languages (relying heavily on the packages JuMP, Gurobi, RCall and Dierckx) and using the Gurobi solver. 
+This section presents computational aspects of the estimation of our proposed model, such as the mathematical programming formulation of both the linear and the nonparametric models and presenting the evaluation metric. 
+Finally we also show how to simulate future scenarios of wind power time series.
+The methodology is implemented in R \cite{rlanguage2008} and Julia \cite{bezanson2012julia} languages (relying heavily on the packages JuMP \cite{DunningHuchetteLubin2017}, Gurobi, RCall and Dierckx) and using the Gurobi solver. 
 
-\subsection{Estimating the QRAL model}
+
+
+\subsection{Estimation of the QRAL model} \label{sec:qral-estimation}
+
+At first, all covariates must be normalized. 
+If they are not in the same scale, the shrinkage feature of the lasso will fail, as different variables may have different weights according to their relative size.
+
+Let $\tilde x_{t,p}$ be an input observation at time $t$ of covariate variable $p$.
+The normalization process is a linear transformation to each covariate $p$ such that all have mean $\mu = 0$ and variance $\sigma^2 = 1$. 
+We apply the transformation ${x}_{t,p} = (\tilde x_{t,p} - \bar{x}_{p}) / \hat\sigma_{\tilde x_{p}}$, where $\bar{x}_{p}$ and $\hat{\sigma}_{\tilde x_{p}}$ are respectively covariate $p$'s unconditional mean and standard deviation. The response variable $Y$ does not need to be transformed.
 
 The QRAL model, as described in problem (\ref{eq:adalasso_model_mat1})-(\ref{eq:adalasso_model_mat2}), can be implemented as a linear programming problem as shown below:
 \begin{IEEEeqnarray}{lr}
@@ -26,65 +34,41 @@ where $J_{(-1)} = \{ 2, \dots, |J| \}$ is the set which contains all indexes but
 Variables $\varepsilon^+_t$ and $\varepsilon^-_t$ represent the quantities $|y-q(\cdot)|^+$ and $|y-q(\cdot)|^-$, respectively. The first line on the objective function represents the sum of the check function over all $j$: $ \rho_{\alpha_j}(y-q(\cdot)) = \alpha_j \varepsilon^+_{tj} + (1-\alpha_j) \varepsilon^-_{tj}$. The constraint (\ref{eq:qral-crossing}) assures that the quantile function be monotonic by forcing that, for every $x_t$ and $\alpha_j$-quantile, $q_{\alpha_{j}}(x_t) \leq q_{\alpha_{j+1}}(x_t)$.
 The second derivative term $D^2_{\alpha_j}\beta_j$ is implemented on the optimization problem by adding a penalty on the objective function to penalize its absolute value, modeled as the sum of auxiliary variables $D2_{pj}^+ + D2_{pj}^-$. The tuning parameter $\gamma$ controls how rough the sequence $\{\beta_{pj}\}_{j \in J}$ can be, for a given $p$.
 
-\subsection{Evaluation Metric}
-
-In this section, we present the metric for which the model fit can be evaluated. From this metric, we show two different forms - information criteria and cross validation - to determine the best tuning parameters $\lambda$ and $\gamma$.
-
-In order to evaluate our predictions, we need to define an error metric. The minimization of this error metric is the objective in estimating the statistical model. 
-As conditional distribution is the focus in this paper, we use a performance measurement which emphasizes the correctness across quantiles. Depending on the application, it might be interesting to put different weights on different quantiles. In this work, however, we will treat every quantile as equals concerning the error measure.
-The chosen error function is the Mean Absolute Percentage Error (MAPE), defined by
-\begin{equation}
-MAPE_{\lambda,\gamma}= \frac{1}{|J|} \frac{1}{|T|}  \sum_{t \in T} \sum_{j \in J} \left| \frac{q_t^{\alpha_{j}}- \hat q_t^{\alpha_{j}}}{q_t^{\alpha_{j}}}  \right|. 
-\end{equation}
-where $q_t^{\alpha_{j}}$ is the $\alpha$-quantile from the data (in the case study, we use the monthly distribution as a good enough approximation of the true quantile, as RG series such as wind power are stationary) and $\hat q_t^{\alpha_j}$ is the $\alpha$-quantile from these scenarios, when estimating the model with parameters $\lambda$ and $\gamma$.
-This function has the advantage of penalizing error proportionally to the quantile value it is estimating. 
+For a thin grid of value of parameters $\lambda$ and $\gamma$ given as input, we estimate a different model $m$ with coefficients $\beta_{0j}^m$ and $\beta_j^{Tm}$. For each $m$, its performance is evaluated according to two metrics presented on sections \ref{sec:SIC} and \ref{sec:GFS}.
+The optimal parameters $\lambda^*$ and $\gamma^*$ for a given criteria are the ones that minimizes the evaluation metric.
 
 
-\subsection{Time-series Cross Validation} \label{sec:cv}
+% \subsection{Time-series Cross Validation} \label{sec:cv}
 
-Estimating the QRAL involves parameters $\lambda$ and $\gamma$, which should be known \textit{a priori}. In statistics and machine learning, a popular technique is using cross-validation (CV) to select the best value of parameters from the range of possibilities. How to select their values among this range is a crucial point in our methodology, as the estimated coefficients vary considerably with respect to parameter choice.
+% Estimating the QRAL involves parameters $\lambda$ and $\gamma$, which should be known \textit{a priori}. In statistics and machine learning, a popular technique is using cross-validation (CV) to select the best value of parameters from the range of possibilities. How to select their values among this range is a crucial point in our methodology, as the estimated coefficients vary considerably with respect to parameter choice.
 
-Out of the different possible implementations of CV, we use the $\mathcal{K}$-fold CV. It consists in first partitioning the dataset in $\mathcal{K}$ equally sized sets, which are the $\mathcal{K}$ folds. For each fold $k \in \{1,\dots,\mathcal{K}\}$, the remaining $\mathcal{K}-1$ folds are used to estimate the model using parameter $\theta$ (for the QRAL model, $\theta = [\gamma \quad \lambda]^T$) and predicting the values in fold $k$. The error function $MAPE_\theta$ measures the result of this prediction.
-So, the CV error is given by the sum of all folds, for a given model which uses the vector of parameter $\theta$ is given by
-\[
- CV(\theta) = \sum_{k \in \mathcal{K}} \sum_{j \in J} MAPE_\theta.\label{eq:cv-error}
-\]
-The optimum parameter $\theta^*_{CV}$, according to this methodology, is the value of $\theta$ which minimizes the CV error
-\begin{equation}
-\theta_{CV}^* = \argmin_\theta CV(\theta) .\label{eq:cv-equation}
-\end{equation}
+% Out of the different possible implementations of CV, we use the $\mathcal{K}$-fold CV. It consists in first partitioning the dataset in $\mathcal{K}$ equally sized sets, which are the $\mathcal{K}$ folds. For each fold $k \in \{1,\dots,\mathcal{K}\}$, the remaining $\mathcal{K}-1$ folds are used to estimate the model using parameter $\theta$ (for the QRAL model, $\theta = [\gamma \quad \lambda]^T$) and predicting the values in fold $k$. The error function $MAPE_\theta$ measures the result of this prediction.
+% So, the CV error is given by the sum of all folds, for a given model which uses the vector of parameter $\theta$ is given by
+% \[
+%  CV(\theta) = \sum_{k \in \mathcal{K}} \sum_{j \in J} MAPE_\theta.\label{eq:cv-error}
+% \]
+% The optimum parameter $\theta^*_{CV}$, according to this methodology, is the value of $\theta$ which minimizes the CV error
+% \begin{equation}
+% \theta_{CV}^* = \argmin_\theta CV(\theta) .\label{eq:cv-equation}
+% \end{equation}
 
-The usage of CV is not straightforward when data is dependent, which is the case of time series. As it is time dependent, one can be interested in using either all observations or to take the dependence away to not interfere on the estimation. The works
-\cite{bergmeir_note_2017} and \cite{bergmeir_use_2012} deals specifically with the usage of CV in a time series context. They provide tests with both $\mathcal{K}$-fold CV and $\mathcal{K}$-fold with non-dependent data. Both schemes are shown of Figure \ref{fig:cross-validation-scheme}.
-\begin{figure}
-	\centering
-	\includegraphics[width=0.7\linewidth]{Images/Cross-validation-scheme}
-	\caption{$\mathcal{K}$-fold CV and $\mathcal{K}$-fold with non-dependent data. Observations in blue are used to estimation and in orange for evaluation. Note that non-dependent data does not use all dataset in each fold. Image from \cite{bergmeir_note_2017}.}
-	\label{fig:cross-validation-scheme}
-\end{figure}
-In both settings, the training data is randomly split into a collection of sets $S_k$, forming a $\mathcal{K}$ size partition. Each of these $S_k$ is used as test set, while the rest is used to estimate coefficients which will be used to predict values of $S_k$. 
-As there are $\mathcal{K}$ folds, this procedure is done $\mathcal{K}$ times. 
-So, for a given vector of tuning parameter $\theta$, the CV score is given by the sum of the error function for each fold. 
-As the CV score is nonconvex, the optimization in (\ref{eq:cv-equation}) is done by iterating over a sequence of values in a thin grid and choosing the smallest one.
+% The usage of CV is not straightforward when data is dependent, which is the case of time series. As it is time dependent, one can be interested in using either all observations or to take the dependence away to not interfere on the estimation. The works
+% \cite{bergmeir_note_2017} and \cite{bergmeir_use_2012} deals specifically with the usage of CV in a time series context. They provide tests with both $\mathcal{K}$-fold CV and $\mathcal{K}$-fold with non-dependent data. Both schemes are shown of Figure \ref{fig:cross-validation-scheme}.
+% \begin{figure}
+% 	\centering
+% 	\includegraphics[width=0.7\linewidth]{Images/Cross-validation-scheme}
+% 	\caption{$\mathcal{K}$-fold CV and $\mathcal{K}$-fold with non-dependent data. Observations in blue are used to estimation and in orange for evaluation. Note that non-dependent data does not use all dataset in each fold. Image from \cite{bergmeir_note_2017}.}
+% 	\label{fig:cross-validation-scheme}
+% \end{figure}
+% In both settings, the training data is randomly split into a collection of sets $S_k$, forming a $\mathcal{K}$ size partition. Each of these $S_k$ is used as test set, while the rest is used to estimate coefficients which will be used to predict values of $S_k$. 
+% As there are $\mathcal{K}$ folds, this procedure is done $\mathcal{K}$ times. 
+% So, for a given vector of tuning parameter $\theta$, the CV score is given by the sum of the error function for each fold. 
+% As the CV score is nonconvex, the optimization in (\ref{eq:cv-equation}) is done by iterating over a sequence of values in a thin grid and choosing the smallest one.
 
 
 
 
-\subsection{Information Criteria for Quantile Regression}
-Using CV can be computationally expensive, as the full estimation is done several times for each tuning parameter - in this case, $\gamma$ and $\lambda$. Other form of deciding the quantity of variables that provides a good equilibrium between in-sample prediction and parsimony is the Information Criteria.
-
-Information criteria summarizes two aspects. One of them refers to how well the model fits the in-sample observations and the other part penalizes the quantity of covariates used in the model. By penalizing how big our model is, we prevent overfitting from happening. So, in order for a covariate to be included in the model, it must supply enough goodness of fit.
-In \cite{machado1993robust}, it is presented a variation of the Schwarz criteria for M-estimators that includes quantile regression. The Schwarz Information Criteria (SIC), adapted to the quantile autoregression case, is presented below:
-{\small
-\begin{align} 
-\begin{split}
-SIC_m = \sum_{j \in J} \left( \log \left(\sum_{t \in T}\rho_{\alpha_j}(y_t - \beta_{0j} - \beta_j^T x_t) \right) +  \frac{\log|T||\epsilon_j|}{2|T|}  \right),\label{eq:SIC}
-\end{split}					
-\end{align}}
-where $K(m)$ is the quantity of coefficients $\beta_{pj}$ greater than zero in the model $m$.
-By minimizing the $SIC$ function, the chosen model is the one with the best combination, according to this metric, of fit and parsimony among all models. 
-
-Even though CV is very popular and produce great results, selecting model with Information Criteria involves less computational time. For the case where the selected model is very similar, it might be the case that the estimation methodology may change a little bit. It is definitely a topic that worths researching.
+% Even though CV is very popular and produce great results, selecting model with Information Criteria involves less computational time. For the case where the selected model is very similar, it might be the case that the estimation methodology may change a little bit. It is definitely a topic that worths researching.
 
 
 % \todoi{Ver se novas figuras (R/grafico-cv.r) e ver se incluir outras formas de CV} % escolhemos trabalhar apenas com este tipo de CV
@@ -108,8 +92,8 @@ Procedure for simulating $S$ future scenarios of $\{y_{\tau,s}\}$
 
 \begin{enumerate}
 	
-	\item Estimate the QR model solving the QRAL optimization problem defined in equation (\ref{eq:adalasso-1})-(\ref{eq:adalasso-ult}). 
-	A sequence of coefficients $\{ \hat\beta_{0j} \}_{j \in J}$ and $\{ \hat\beta_{j} \}_{j \in J}$ are the output from this problem. 
+	\item Estimate a QR model (for the QRAL solve the optimization problem defined in equation (\ref{eq:adalasso-1})-(\ref{eq:adalasso-ult})). 
+	A sequence of coefficients $\{ \hat\beta_{0j} \}_{j \in J}$ and $\{ \hat\beta_{j} \}_{j \in J}$ is the output from this problem. 
 
 	\item Initialize time index $\tau = |T| + 1$.
 	
@@ -129,7 +113,9 @@ Procedure for simulating $S$ future scenarios of $\{y_{\tau,s}\}$
 		% At first, we define a discrete quantile function $\tilde{Q}_{y_{\tau,s}}$. By mapping every $\alpha \in A$ with its estimated quantile $\hat{q}_{\alpha_j}(x_t)$, we define function $\tilde{Q}_{y_{\tau,s}}$. In order to produce a continuous function from a set of ordered points, we use linear interpolation and we arrive on the Quantile function $\hat{Q}_{y_{\tau}}$.
 		
 		%This process is described in more details on section \ref{sec:estimating-distribution}. 
-		\item Let $U$ be a random variable with uniform distribution over the interval $[0,1]$. By using the result of the probability integral transform (PIT), random variable $F^{-1}_{y_{\tau,s}}(U)$ has the same distribution as $y_{\tau,s}$. The value of $y_{\tau,s}$ is built by drawing one random observation of U and applying the PIT.
+		\item Let $U$ be a random variable with uniform distribution over the interval $[0,1]$. By using the result of the probability integral transform (PIT), random variable $F^{-1}_{y_{\tau,s}}(U)$ has the same distribution as $y_{\tau,s}$. The value of $y_{\tau,s}$ is built by drawing one random observation of U and applying the PIT. \todo{item cristiano}
+
+
 
 		 \end{enumerate}
 	% let $x_{\tau,s} = [y_{\tau-1,s}, \dots, y_{\tau-12,s}]$ be the vector of explanatory variables, used as input to predict the conditional distribution function in time $\tau$ and scenario $s$.
@@ -140,5 +126,61 @@ Procedure for simulating $S$ future scenarios of $\{y_{\tau,s}\}$
 
 \end{enumerate}
 
-
 \noindent\rule{\columnwidth}{1pt}
+
+
+\subsection{Schwarz Information Criteria for Quantile Regression (SIC)} \label{sec:SIC}
+
+Information criteria (IC) is the state of the art in time series model selection. It is also employed in other multiple quantile model studies \cite{zou_regularized_2008, jiang_interquantile_2014} to tune parameters.
+An IC summarizes two aspects: the first refers to how well the model fits the in-sample observations, while the other part penalizes the quantity of covariates used as input.
+By penalizing the model's size, we prevent overfitting from happening. Hence, in order for a covariate to be included in the model, it must supply enough goodness of fit.
+The equation of SIC, applied for quantile autoregression case, is presented below:
+% {\small
+% \begin{align} 
+% \begin{split}
+% SIC_m = \sum_{j \in J} \left( \log \left(\sum_{t \in T}\rho_{\alpha_j}(y_t - \beta_{0j} - \beta_j^T x_t) \right) +  \frac{\log(|T|)|\epsilon_j|}{2|T|}  \right),\label{eq:SIC}
+% \end{split}					
+% \end{align}} 
+ \begin{equation} 
+\small
+SIC^m = \sum_{j \in J} \left( \log \left(\sum_{t \in T}\rho_{\alpha_j}(y_t - \beta_{0j}^m - \beta_j^{Tm} x_t) \right) +  \frac{\log(|T|)|\epsilon_m|}{2|T|}  \right),\label{eq:SIC}
+\end{equation}
+where $\epsilon_m$ is the elbow set, defined as $\epsilon_m = \{(t): y_t - q(x_t) = 0 \}$. The authors in \cite{li_l1-norm_2008} show that the quantity $|\epsilon_m|$ is the effective degrees of freedom in the quantile regression.
+
+
+
+
+\subsection{Model selection based on goodness of fit for scenarios (GFS)} \label{sec:GFS}
+
+Having scenario simulation as a goal in our work demands models which perform well in this context, in opposition of the common approach of assessing performance for the $k$-step forecast.  Most statistical models are designed to provide a good fit on point forecasts, but produces scenarios which quickly converge to the unconditional mean.
+The applications that use future scenarios, discussed in Section \ref{sec:introduction}, demands that scenarios resemble the time series past behavior.
+
+We propose a novel metric, where we simulate future scenarios and take the mean absolute error (MAE) of the unconditional forecasted scenarios to select the model that produces scenarios the most similar to reality.
+The MAE is defined by
+\begin{equation}
+MAE_{\theta}= \frac{1}{|J|} \frac{1}{12} \sum_{j \in J} \sum_{i = 1}^{12}  \left| q_i^{\alpha_{j}}- \hat q_i^{\alpha_{j}}  \right|,
+\label{eq:MAE}
+\end{equation}
+where $\theta = [\gamma \quad \lambda]^T$, $q_t^{\alpha_{j}}$ is the true $\alpha_j$-quantile  and $\hat q_t^{\alpha_j}$ the predicted $\alpha_j$-quantile.
+The MAE error function emphasizes the correctness across quantiles. Depending on the application, it might be interesting to put different weights on different quantiles. In this work, however, we will treat every quantile as equals concerning the error measure.
+
+We consider the third year ahead as the unconditional state of the time series. Given that the observed values lies on $t \in \{1,\dots,|T| \}$, the subset of future scenarios $\{y_{|T|+25,s}, y_{|T|+26,s}, \dots, y_{|T|+36,s} \}$ is compared with the observed past values of each month. 
+For each month $i = 1,\dots, 12$, take the $\alpha_j$-quantile $\hat q_t^{\alpha_j}$ from the set of $S$ scenarios $y_{|T|+24+i}$. The estimated quantile is compared with the historic quantile from this period. For example, we evaluate how close the 25\%-quantile
+of all simulated scenarios in the month of March (from the third year) is against the 25\%-quantile
+of all observed months of March. We take the MAE of the absolute difference $\left| q_i^{\alpha_{j}}- \hat q_i^{\alpha_{j}}  \right|$ for every month $i$ and quantile $j$ as the error measure, as shown on equation (\ref{eq:MAE}).
+
+The output of problem (\ref{eq:adalasso-1})-(\ref{eq:adalasso-ult}) is the best 1-step ahead model, giving the tuning parameter $\lambda$ and $\gamma$. 
+So, selecting tuning parameters according to realistic scenario generation puts together a goodness of fit for both the conditional $k$-step ahead, which produces reliable scenario on the short term, but also for scenario generated for the long term.  
+
+% where $q_t^{\alpha_{j}}$ is the true $\alpha$-quantile from the data (in the case study, we use the monthly distribution as a good enough approximation of the true quantile, as RG time series such as wind power are stationary) and $\hat q_t^{\alpha_j}$ is the $\alpha$-quantile from these scenarios, when estimating the model with parameters $\lambda$ and $\gamma$.
+% This function has the advantage of penalizing error proportionally to the quantile value it is estimating. 
+
+
+% In order to evaluate the model performance, we need to define an error metric. The minimization of this error metric is the objective in estimating the statistical model. 
+% As conditional distribution is the focus in this paper, 
+
+% \todo{Voltar para essa seção}
+
+
+
+

@@ -20,7 +20,11 @@
 %\documentclass[journal,12pt,onecolumn,draftclsnofoot,]{IEEEtran}
 %\usepackage[a4paper, marginparwidth=1in]{geometry}
 
-%
+% TODO 
+% TODO 1) Retirar cross-validation 
+% TODO 2) Métrica de regularização 
+% a) SIC - é o state of the art
+% b) Métrica que ataca diretamente o objetivo de um modelo de simulação, que é: produzir cenários de longo prazo que recuperem o shape dos quantis incondicionais obtidos no histórico. Falar que isso é uma contribuição para essa nova área de probabilistic forecasting onde os modelos são ajustados para um fitting de um passo a frente, mas as aplicações exigem estabilidade de longo prazo da distribuição. Isso significa que vamos regularizar o modelo através de um métrica de goodness of fit.  
 
 
 
@@ -73,11 +77,11 @@
 \DeclareMathOperator*{\Maximize}{Maximize}
 
 \begin{document}
-\title{Wind Power Scenario Generation Using a High Dimensional Nonparametric Framework}
+\title{An Interquantile Regularized Time Series Model for Wind Power Probabilistic Forecasting}
 
-\author{Marcelo~Ruas~%,~\IEEEmembership{Student Member,~IEEE,}
-	and Alexandre~Street%,~\IEEEmembership{Member,~IEEE}	
-	
+\author{Marcelo~Ruas,~%,~\IEEEmembership{Student Member,~IEEE,}
+	 	Alexandre~Street,~%\IEEEmembership{Member,~IEEE}	
+		and Cristiano Fernandes
 	
 	%\thanks{This work was partially supported by UTE Parna\'iba Gera\c{c}\~ao de Energia S.A. through R\&D project ANEEL PD-7625-0001/2013.}
 	%\thanks{Bruno Fanzeres, Arthur Brigatto and Alexandre Street are with the Electrical Engineering Department, Pontifical Catholic University of Rio de Janeiro (PUC-Rio), Rio de Janeiro, RJ, Brazil (e-mail: \mbox{bsantos@ele.puc-rio.br}; \mbox{street@ele.puc-rio.br}).}
