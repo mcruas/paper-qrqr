@@ -14,13 +14,13 @@ Besides monotonicity, one can expect that the value of similar quantiles be prod
 If the coefficient of a given $p$ covariate changes too abruptly with respect to a change on the probability $\alpha$, there is a high probability that the estimation did not produce good results, capturing noise on the data.  
 To account for all these issues, all quantiles must be estimated at once. 
 
-To induce smoothness of coefficients across quantiles, we introduce a second derivative filter, given by the discrete approximation is given by:
+To ensure smooth transitions on the coefficients across quantiles, we introduce a second derivative filter. Assuming the function $\beta(\alpha)$ maps the quantile probability $\alpha$ on its coefficient value, the discrete approximation of the second derivative of $\beta(\alpha)$ is given by:
 \begin{equation}
 D_{\alpha_j}^{2} \beta_{pj} := \frac{\left(\frac{\beta_{p,j+1}-\beta_{pj}}{\alpha_{j+1}-\alpha_{j}}\right)-\left(\frac{\beta_{p,j}-\beta_{p,j-1}}{\alpha_{j}-\alpha_{j-1}}\right)}{\alpha_{j+1}-\alpha_{j-1}}. 
 \end{equation}
-The works by \cite{zou_regularized_2008, jiang_interquantile_2014} also use multiple quantile regressions at once and make use of interquantile similarities to produce regularization on the quantiles. In \cite{zou_regularized_2008}, the authors use the norm $\| \beta \|_{1\infty}=\sum_{p=1}^{|P|} \max\{ |\beta_j^{(k)} |\}$ as penalization. Such penalization is imposed on the maximum value among all quantiles for a given covariate. This idea is extended by \cite{jiang_interquantile_2014}, that uses a fused AdaLASSO mixing the $\ell_1$ penalization with the absolute interquantile difference.
+In \cite{zou_regularized_2008, jiang_interquantile_2014}, multiple quantile regressions are also used at once and make use of interquantile similarities to produce regularization on the quantiles. In \cite{zou_regularized_2008}, the authors use the norm $\| \beta \|_{1\infty}=\sum_{p=1}^{|P|} \max\{ |\beta_j^{(k)} |\}$ as penalization. Such penalization is imposed on the maximum value among all quantiles for a given covariate. This idea is extended by \cite{jiang_interquantile_2014}, that uses a fused AdaLASSO mixing the $\ell_1$ penalization with the absolute interquantile difference.
 
-The statistical model \textbf{quantile regularized adaptive LASSO (QRAL)} is defined by the vector of coefficients $\beta_{0}$ and the matrix of size $|P| \times |J|$ of regressor coefficients $\beta_{pj}$, which are the solution of the following minimization problem:
+The statistical model \textbf{quantile regularized adaptive LASSO (QRAL)} is defined by the vector of coefficients $\beta_{0j}$ and the matrix of size $|P| \times |J|$ of regressor coefficients $\beta_{pj}$, which are the solution of the following minimization problem:
 % \begin{IEEEeqnarray}{lr}  % para duas colunas
 % 	\underset{\beta_{0j},\beta_j}{\text{min}} \sum_{j \in J} \left( \sum_{t\in T}\rho_{\alpha_j}(y_{t}-(\beta_{0j} + \beta_j^T x_t)) \right.  \span \nonumber \\
 % 	\span \left. + \lambda\  \sum_{p \in P} w_{pj}^\delta \mid  \beta_{pj} \mid \right) + \gamma \sum_{p \in P} \sum_{j \in J'} |D^2_{pj}|,\label{eq:adalasso_model}

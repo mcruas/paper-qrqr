@@ -16,7 +16,7 @@ Let $\rho$ be the check function
 	\end{equation}
 The quantile function for a given finite sample $\{y_t,x_t \}_{t \in T}$, where $T$  is the set of time indexes, and a given probability $\alpha$ is the solution of minimizing the loss function $L_\alpha(\cdot)$:
 	\begin{IEEEeqnarray}{C}
-	\hat{Q}_{Y|X}(\alpha,\cdot)\quad\in\quad  \underset{q\in \mathbb{Q}}{\text{arg min}}\, L_\alpha(q) = \sum_{t\in T}\rho_{\alpha}(y_{t}-q(x_t)).\label{eq:optim-lqr1} 
+	\hat{Q}_{Y|X}(\alpha,\cdot) \,\, \in \,\,  \underset{q\in \mathbb{Q}}{\text{arg min}}\, L_\alpha(q) = \sum_{t\in T}\rho_{\alpha}(y_{t}-q(x_t)).\label{eq:optim-lqr1} 
 	\end{IEEEeqnarray}
 For inference on QR and finite sample properties, see the Chapter 3 on \cite{koenker2005quantile}.
 The $\alpha$-quantile function $q(\cdot)$ belongs to a function space $\mathbb{Q}$. We might have different assumptions for space $\mathbb{Q}$, depending on the type of function we want to find 

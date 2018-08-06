@@ -92,9 +92,10 @@
 
 
 \begin{abstract}
-	Producing probabilistic forecasts for renewable generation is a topic of interest in power system applications. In this work, we focus on generating future scenarios of wind power generation.  Most time series methods used to produce such forecasts rely on the assumption of Gaussian errors or conditional Gaussian distribution, however real life applications on power systems require proper modeling of nongaussian time series.  
-	We develop, in this work, a nonparametric methodology based on Quantile Regression to estimate the conditional distribution function for wind time series.  
-	The conditional distribution is formed by connecting an array of quantiles jointly estimated, for which we develop the model Quantile Regularized Adaptive LASSO (QRAL).	The QRAL implements two types of regularization. One is based on the Adaptive LASSO for selecting covariates within each Quantile Regression. The other emphasizes the connection across different quantiles, reflecting the fact that quantile functions should have smooth variation,
+Producing probabilistic forecasts for renewable generation is one of the hot topics in recent power system applications. In this work, we focus on generating future scenarios of wind power generation.  Most time series methods used to produce such forecasts rely on the assumption of Gaussian errors or conditional Gaussian distribution. However, real life applications on power systems require proper modeling of nongaussian time series with focus on distribution tail dynamics to adress risk-analysis.  
+We develop, in this work, a nonparametric methodology based on Quantile Regression to estimate the conditional distribution function for wind time series.  
+The conditional distribution is formed by connecting an array of quantiles jointly estimated, for which we develop the model Quantile Regularized Adaptive LASSO (QRAL).	The QRAL implements two types of regularization. One is based on the Adaptive LASSO for selecting covariates within each Quantile Regression. 
+The other emphasizes the connection across different quantiles, reflecting the fact that quantile functions should have smooth variation,
 exploring the similarity of neighbor quantiles.	A case study with realistic wind power data from the Brazilian Northeast compares the developed models with different benchmarks in the literature. The methods were able to outperform them in terms of minimizing the Mean Absolute Percentile Error of future scenarios in recovering the historic monthly quantiles.
 \end{abstract}
 
