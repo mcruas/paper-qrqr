@@ -5,9 +5,9 @@ Let the conditional quantile function of $Y$ for a given value $x$ of the $d$-di
 	Q_{Y|X}(\alpha,x) = F_{Y|X=x}^{-1}(\alpha) = \inf\{y: F_{Y|X=x}(y) \geq \alpha\}.
 	\label{eq:quantile-function}
 	\end{equation}
-The function $Q$ is the inverse of the distribution function $F$, and represents the smallest value $y$ for which the distribution function is greater than a given probability $\alpha$.
+The function $Q$ is the inverse of the conditional distribution function $F$, and represents the smallest value $y$ for which the distribution function is greater than a given probability $\alpha$.
 
-Let $\rho$ be the check function 
+Let $\rho$ be the ``check" function 
 	\begin{equation}\label{eq:check-function}
 	\rho_{\alpha}(x)=\begin{cases}
 	\alpha x & \text{if }x\geq0\\
@@ -16,32 +16,35 @@ Let $\rho$ be the check function
 	\end{equation}
 The quantile function for a given finite sample $\{y_t,x_t \}_{t \in T}$, where $T$  is the set of time indexes, and a given probability $\alpha$ is the solution of minimizing the loss function $L_\alpha(\cdot)$:
 	\begin{IEEEeqnarray}{C}
-	\hat{Q}_{Y|X}(\alpha,\cdot) \,\, \in \,\,  \underset{q\in \mathbb{Q}}{\text{arg min}}\, L_\alpha(q) = \sum_{t\in T}\rho_{\alpha}(y_{t}-q(x_t)).\label{eq:optim-lqr1} 
+	\hat{Q}_{Y|X}(\alpha,\cdot) \,\, \in \,\,  \underset{q\in \mathbb{Q}}{\text{arg min}}\, L_\alpha(q) = \sum_{t\in T}\rho_{\alpha}(y_{t}-q_\alpha(x_t)).\label{eq:optim-lqr1} 
 	\end{IEEEeqnarray}
-For inference on QR and finite sample properties, see the Chapter 3 on \cite{koenker2005quantile}.
+For inference on QR and finite sample properties, see Chapter 3 on \cite{koenker2005quantile}.
 The $\alpha$-quantile function $q(\cdot)$ belongs to a function space $\mathbb{Q}$. We might have different assumptions for space $\mathbb{Q}$, depending on the type of function we want to find 
-for $q$. A few properties, however, must be achieved by our choice of space, such as being continuous and having limited first derivative. In this work, only the case where $\mathbb{Q}$ is a linear function space is considered. 
+for $q$. A few properties, however, must be part of our choice of space, such as being continuous and having limited first derivative. In this work, only the case where $\mathbb{Q}$ is a linear function space is considered. 
 Thus, $q$ is of the form $$q_\alpha(x_t) = \beta_0 + \beta^T x_t.$$ 
 
 % The linear model presumes that the $\alpha$-quantile function is a linear function of its regressors:
 % $$q_{\alpha}(x_t) = \beta_{0} + \beta^T x_t.$$   
-When dealing with many candidates of covariates, one has to properly select the relevant ones out of a set of candidates. In practice, it means that some coefficients from the vector $\beta = [ \beta_{1 } \cdots \beta_{p} ]$ might assume value zero.
+When dealing with many candidates of covariates, one has to properly select the relevant ones out of a set of candidates. In practice, it means that some coefficients from the vector $\beta_j = [ \beta_{1,j} \cdots \beta_{pj}]$ might assume value zero, for each quantile $\alpha$.
 There are many ways of selecting a subset of variables among the available options.
-A classical approach for this problem is the Stepwise algorithm \cite{efroymson1960multiple}, \cite{hocking_selection_1967}, \cite{tibshirani1996regression}, which includes new variables iteratively. 
+A classical approach for this problem is the stepwise algorithm \cite{efroymson1960multiple}, \cite{hocking_selection_1967}, \cite{tibshirani1996regression}, which includes new variables iteratively. 
 
-Newly advocated variable selection method which fits on a linear programming context are the LASSO/AdaLASSO techniques, which consists in penalizing via the $\ell_1$-norm. Besides shrinking coefficients towards to zero, it has also the capability of effectively pushing coefficients to zero (an effect that ridge regression cannot achieve \cite{tibshirani1996regression}). The usage of LASSO and AdaLASSO in the QR context is the topic of study in \cite{li_l1-norm_2008,ciuperca_adaptive_2016,belloni_l1-penalized_2009,zou_regularized_2008,jiang_interquantile_2014}.
+Newly advocated variable selection method which fits on a linear programming context are the LASSO/adaLASSO techniques, which consists in penalizing the $\ell_1$-norm of coefficients size. Besides shrinking coefficients towards zero, it has also the capability of effectively pushing coefficients to zero (an effect that ridge regression cannot achieve \cite{tibshirani1996regression}). 
+The usage of LASSO and adaLASSO in the QR context is the topic of study in \cite{li_l1-norm_2008,ciuperca_adaptive_2016,belloni_l1-penalized_2009,zou_regularized_2008,jiang_interquantile_2014}.
 We refer to the reader the work from \cite{belloni_l1-penalized_2009}, where it is possible to find specific properties and convergence rates when using the LASSO to perform model selection in a QR framework. 
 
 Regarding the penalization parameter $\lambda$, which dictates the shrinkage magnitude of the linear coefficients, the level of parsimony of the model can be defined by the user through such quantity. This is due to the fact that higher values of $\lambda$ means less variables selected to be non-zero. 
 
-The single $\alpha$-quantile AdaLASSO is estimated by the following optimization problem:
+The single $\alpha$-quantile adaLASSO is estimated by the following optimization problem:
 \begin{IEEEeqnarray}{c}
-\underset{\beta_{0},\beta}{\text{min}} \sum_{t \in T} \left( \rho_\alpha(y_t - \beta_0 -  \beta^T x_{t}) \right) +\lambda \sum_{p \in P} w_p | \beta_p |,\label{eq:l1-qar-optim} 
+\underset{\beta_{0},\beta}{\text{min}} \sum_{t \in T}  \rho_\alpha(y_t - \beta_0 -  \beta^T x_{t})  +\lambda \sum_{p \in P} w_p | \beta_p |,\label{eq:l1-qar-optim} 
 \end{IEEEeqnarray}
 where $p$ is the collection of covariate indexes.
-What differs the AdaLASSO from the LASSO is the inclusion of the term $w_p$. 
-If the model (\ref{eq:l1-qar-optim}) is estimated with all $w_{p}=1$, the output of the optimization problem are coefficients of LASSO  $\beta^{L}_{p}$. The AdaLASSO coefficients $\beta^{AL}_{p}$ are obtained when solving the same optimization problem by letting $w_{p}=1/|\beta^{L}_{p}|$. 
-% What differs the AdaLASSO from the LASSO is the inclusion of the term $w_p$. Suppose the model (\ref{eq:l1-qar-optim}) is estimated with all $w_{pj}=1$, the output of the optimization problem are coefficients of LASSO  $\beta^{L}_{pj}$. The AdaLASSO coefficients $\beta^{AL}_{pj}$ are obtained when solving the same optimization problem while letting $w_{pj}=1/|\beta^{L}_{pj}|$. % para voltar o 'j'
+What differs the adaLASSO from the LASSO is the inclusion of the term $w_p$. 
+If the model (\ref{eq:l1-qar-optim}) is estimated with all $w_{p}=1$, the output of the optimization problem are coefficients of LASSO  $\beta^{L}_{p}$. The adaLASSO coefficients $\beta^{AL}_{p}$ are obtained when solving the same optimization problem by letting $w_{p}=1/|\beta^{L}_{p}|$. 
+The main advantage of adaLASSO over the LASSO is the oracle property for variable selection, that is attended by the former while not by the latter. See, for example, \cite{ciuperca_adaptive_2016}.
+
+% What differs the adaLASSO from the LASSO is the inclusion of the term $w_p$. Suppose the model (\ref{eq:l1-qar-optim}) is estimated with all $w_{pj}=1$, the output of the optimization problem are coefficients of LASSO  $\beta^{L}_{pj}$. The adaLASSO coefficients $\beta^{AL}_{pj}$ are obtained when solving the same optimization problem while letting $w_{pj}=1/|\beta^{L}_{pj}|$. % para voltar o 'j'
 
 
 

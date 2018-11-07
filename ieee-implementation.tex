@@ -2,24 +2,24 @@
 
 This section presents computational aspects of the estimation of our proposed model, such as the mathematical programming formulation of both the linear and the nonparametric models and presenting the evaluation metric. 
 Finally we also show how to simulate future scenarios of wind power time series.
-The methodology is implemented in R \cite{rlanguage2008} and Julia \cite{bezanson2012julia} languages (relying heavily on the packages JuMP \cite{DunningHuchetteLubin2017}, Gurobi, RCall and Dierckx) and using the Gurobi solver. 
+The methodology is implemented in R \cite{rlanguage2008} and Julia \cite{bezanson2012julia} languages, using  packages JuMP \cite{DunningHuchetteLubin2017}, Gurobi, RCall and Dierckx and using the Gurobi solver. 
 
 
 
 \subsection{Estimation of the QRAL model} \label{sec:qral-estimation}
 
 At first, all covariates must be normalized. 
-If they are not in the same scale, the shrinkage feature of the lasso will fail, as different variables may have different weights according to their relative size.
+If they are not in the same scale, the shrinkage feature of the LASSO will fail, as different variables may have different weights according to their relative size.
 
 Let $\tilde x_{t,p}$ be an input observation at time $t$ of covariate variable $p$.
-The normalization process is a linear transformation to each covariate $p$ such that all have mean $\mu = 0$ and variance $\sigma^2 = 1$. 
+The normalization process is a linear transformation to each covariate $p$ such that all have mean $0$ and variance $1$. 
 We apply the transformation ${x}_{t,p} = (\tilde x_{t,p} - \bar{x}_{p}) / \hat\sigma_{\tilde x_{p}}$, where $\bar{x}_{p}$ and $\hat{\sigma}_{\tilde x_{p}}$ are respectively covariate $p$'s unconditional mean and standard deviation. The response variable $Y$ does not need to be transformed.
 
-The QRAL model, as described in problem (\ref{eq:adalasso_model_mat1})-(\ref{eq:adalasso_model_mat2}), can be implemented as a linear programming problem as shown below:
+The QRAL model, as described in problem (\ref{eq:adaLASSO_model_mat1})-(\ref{eq:adaLASSO_model_mat2}), can be implemented as a linear programming problem as shown below:
 \begin{IEEEeqnarray}{lr}
 	\underset{\beta_{0},\beta,\varepsilon_{t j}^{+},\varepsilon_{t j}^{-}}{\text{min}} \sum_{j \in J} \sum_{t \in T}(\alpha_j\varepsilon_{t j}^{+}+(1-\alpha_j)\varepsilon_{t j}^{-}) \span \nonumber  \\
 	\span + \lambda \sum_{p \in P} \sum_{j \in J} w_{pj} (\xi^+_{pj} + \xi^-_{pj}) \nonumber \\ 
-	\span + \gamma \sum_{p \in P} \sum_{j \in J'} (D2_{pj}^+ + D2_{pj}^-),  \label{eq:adalasso-1} \\
+	\span + \gamma \sum_{p \in P} \sum_{j \in J'} (D2_{pj}^+ + D2_{pj}^-),  \label{eq:adaLASSO-1} \\
 	\mbox{subject to:} \nonumber & \\
 	\varepsilon_{t j}^{+}-\varepsilon_{t j}^{-}=y_{t}-\beta_{0 j}-\beta_{j}^T x_{t},& \forall t \in T ,\forall j \in J,\\
 	\xi_{pj}^+ - \xi_{pj}^- = \beta_{pj},&\forall p \in P, \forall j \in J\\ 
@@ -28,14 +28,13 @@ The QRAL model, as described in problem (\ref{eq:adalasso_model_mat1})-(\ref{eq:
 	\beta_{0j} + \beta_{j}^T x_{t} \leq \beta_{0,j+1} + \beta_{j+1}^T x_{t},&\forall t \in T, \forall j \in J_{(-1)}, \label{eq:qral-crossing} \\
 	\varepsilon_{t j}^{+},\varepsilon_{t j}^{-}\geq0,&\forall t \in T, \forall j \in J,\\
 	\xi_{pj}^+, \xi_{pj}^- \geq 0, & \forall p\in P, \forall j \in J, \\
-	D2_{pj}^+, D2_{pj}^- \geq 0, & \forall p\in P, \forall j \in J', \label{eq:adalasso-ult} 
+	D2_{pj}^+, D2_{pj}^- \geq 0, & \forall p\in P, \forall j \in J', \label{eq:adaLASSO-ult} 
 \end{IEEEeqnarray}
 where $J_{(-1)} = \{ 2, \dots, |J| \}$ is the set which contains all indexes but the first and $J'  = \{ 2, \dots, |J|-1 \}$ is the set which contains all indexes but the first and the last.
-Variables $\varepsilon^+_t$ and $\varepsilon^-_t$ represent the quantities $|y-q(\cdot)|^+$ and $|y-q(\cdot)|^-$, respectively. The first line on the objective function represents the sum of the check function over all $j$: $ \rho_{\alpha_j}(y-q(\cdot)) = \alpha_j \varepsilon^+_{tj} + (1-\alpha_j) \varepsilon^-_{tj}$. The constraint (\ref{eq:qral-crossing}) assures that the quantile function be monotonic by forcing that, for every $x_t$ and $\alpha_j$-quantile, $q_{\alpha_{j}}(x_t) \leq q_{\alpha_{j+1}}(x_t)$.
+Variables $\varepsilon^+_t$ and $\varepsilon^-_t$ represent the quantities $|y-q(\cdot)|^+$ and $|y-q(\cdot)|^-$, respectively. The first line on the objective function in (\ref{eq:adaLASSO-1}) represents the sum of the function $\rho$ over all $j$: $ \rho_{\alpha_j}(y-q(\cdot)) = \alpha_j \varepsilon^+_{tj} + (1-\alpha_j) \varepsilon^-_{tj}$. The constraint (\ref{eq:qral-crossing}) assures that the quantile function be monotonic by forcing that, for every $x_t$ and $\alpha_j$-quantile, $q_{\alpha_{j}}(x_t) \leq q_{\alpha_{j+1}}(x_t)$.
 The second derivative term $D^2_{\alpha_j}\beta_j$ is implemented on the optimization problem by adding a penalty on the objective function to penalize its absolute value, modeled as the sum of auxiliary variables $D2_{pj}^+ + D2_{pj}^-$. The tuning parameter $\gamma$ controls how rough the sequence $\{\beta_{pj}\}_{j \in J}$ can be, for a given $p$.
 
-For a thin grid of value of parameters $\lambda$ and $\gamma$ given as input, we estimate a different model $m$ with coefficients $\beta_{0j}^m$ and $\beta_j^{Tm}$. For each $m$, its performance is evaluated according to two metrics presented on sections \ref{sec:SIC} and \ref{sec:GFS}.
-The optimal parameters $\lambda^*$ and $\gamma^*$ for a given criteria are the ones that minimizes the evaluation metric.
+The optimal values of the tuning parameters $\lambda^*$ and $\gamma^*$ are chosen by running a thin grid of values for those parameters, resulting in a set of $m$ estimated models with coefficients $\beta_{0j}^m$ and $\beta_j^{Tm}$. Each of these $m$ models, are then evaluated according to either of the two metrics presented on sections \ref{sec:SIC} and \ref{sec:GFS}. For a given criteria, the optimal values of $\lambda^*$ and $\gamma^*$  are those that minimizes the chosen metric.
 
 
 % \subsection{Time-series Cross Validation} \label{sec:cv}
@@ -79,21 +78,22 @@ The optimal parameters $\lambda^*$ and $\gamma^*$ for a given criteria are the o
 
 \subsection{Monte Carlo scenario generation} \label{sec:scenario-generation}
 
-This section presents how to generate future scenarios of time series $\{y_t\}$ from the estimated coefficients from a QR model using a Monte Carlo approach. 
+This section presents how to generate future scenarios of time series $\{y_t\}$ from the estimated coefficients from a QR model using a Monte Carlo (MC) approach. 
 %Let $|T|$ be the total length of $\{y_t\}$ and $S$ the number of scenarios of size $K$ we produce. 
 %The variables chosen to compose $x_t$ can be either exogenous variables, autoregressive components of $y_t$ or both. We use a nonparametric approach which to estimate, at every $t$, the $k$-step ahead conditional density of $y_t$.
-The Monte Carlo procedure we use to produce $S$ different future scenarios $\{ \hat{y}_{\tau,s} \}_{\tau=|T|+1}^{|T|+K}$ consists in first estimating the model for a given time $\tau$ and scenario $s$. Then, for each of these we take input vector $x_{\tau,s}$ and calculate the discrete quantile function $\tilde{Q}_{y_{\tau}|X}$, which is the intermediate step to estimate the continuous quantile function $\hat{Q}_{y_{\tau}|X}$. 
+The MC procedure  we use to produce $S$ different future scenarios $\{ \hat{y}_{\tau,s} \}_{\tau=|T|+1}^{|T|+K}$ consists in first estimating the model for a given time $\tau$ and scenario $s$. Then, for each of these we take input vector $x_{\tau,s}$ and calculate the discrete quantile function $\tilde{Q}_{y_{\tau}|X}$, which is the intermediate step to estimate the continuous quantile function $\hat{Q}_{y_{\tau}|X}$. 
+This same MC procedure is employed to produce scenario simulations for a variaty of QR based models, including the QRAL.
 
 \noindent\rule{\columnwidth}{1pt}
 
-Monte Carlo procedure for simulating $S$ future scenarios of $\{y_{\tau,s}\}$
+MC procedure for simulating $S$ future scenarios of $\{y_{\tau,s}\}$
 
 \noindent\rule{\columnwidth}{1pt}
 
 \begin{enumerate}
 	
-	\item Estimate a QR model (for the QRAL solve the optimization problem defined in equation (\ref{eq:adalasso-1})-(\ref{eq:adalasso-ult})). 
-	A set of coefficients $\{ \hat\beta_{0j} \}_{j \in J}$ and $\{ \hat\beta_{j} \}_{j \in J}$ is the output from this problem. 
+	\item Estimate a QR model (for the QRAL solve the optimization problem defined in equation (\ref{eq:adaLASSO-1})-(\ref{eq:adaLASSO-ult})). 
+	A set of coefficients $\{ \hat\beta_{0j} \}_{j \in J}$ and $\{ \hat\beta_{j} \}_{j \in J}$ is the output from this optimization, using time series $y_t$ and $x_{pt}$ from the period $t = 1, \dots, |T|$. 
 
 	\item Initialize time index $\tau = |T| + 1$.
 	
@@ -134,9 +134,7 @@ Monte Carlo procedure for simulating $S$ future scenarios of $\{y_{\tau,s}\}$
 \subsection{Schwarz Information Criteria for Quantile Regression (SIC)} \label{sec:SIC}
 
 Information criteria (IC) is the state of the art in time series model selection. It is also employed in other multiple quantile model studies \cite{zou_regularized_2008, jiang_interquantile_2014} to tune parameters.
-An IC summarizes two aspects: the first refers to how well the model fits the in-sample observations, while the other part penalizes the quantity of covariates used as input.
-By penalizing the model's size, we prevent overfitting from happening. Hence, in order for a covariate to be included in the model, it must supply enough goodness of fit.
-The equation of SIC, applied for quantile autoregression case, is presented below:
+An IC summarizes two desirable characteristics in model selection: in-sample goodness of fit and penalization of complexity as given by the model size. Hence, in order for a covariate to be included in the model, it must supply enough goodness of fit. The expression for SIC appropriate for quantile autoregression is presented below:
 % {\small
 % \begin{align} 
 % \begin{split}
@@ -145,33 +143,33 @@ The equation of SIC, applied for quantile autoregression case, is presented belo
 % \end{align}} 
  \begin{equation} 
 \small
-SIC^m = \sum_{j \in J} \left( \log \left(\sum_{t \in T}\rho_{\alpha_j}(y_t - \beta_{0j}^m - \beta_j^{Tm} x_t) \right) +  \frac{\log(|T|)|\epsilon_m|}{2|T|}  \right),\label{eq:SIC}
+SIC_\theta = \sum_{j \in J} \left( \log \left(\sum_{t \in T}\rho_{\alpha_j}(y_t - \beta_{0j}^\theta - \beta_j^{T\theta} x_t) \right) +  \frac{\log(|T|)|\epsilon_\theta|}{2|T|}  \right),\label{eq:SIC}
 \end{equation}
-where $\epsilon_m$ is the elbow set, defined as $\epsilon_m = \{(t,\alpha): y_t - q_\alpha(x_t) = 0 \}$. The authors in \cite{li_l1-norm_2008} show that the quantity $|\epsilon_m|$ is the effective degrees of freedom in the quantile regression.
-
-
+where $\theta = [\gamma \quad \lambda]^T$ and $\epsilon_\theta$ is the elbow set, defined as $\epsilon_\theta = \{(t,j): y_t - q_{\alpha_j}(x_t) = 0 \}$. The authors in \cite{li_l1-norm_2008} show that the quantity $|\epsilon_\theta|$ is the effective degrees of freedom in the quantile regression.
 
 
 \subsection{Model selection based on goodness of fit for scenarios (GFS)} \label{sec:GFS}
 
-Having scenario simulation as a goal in our work demands models which perform well in this context, in opposition to the common approach of assessing performance for the $k$-step forecast.  Most statistical models are designed to provide a good fit on point forecasts, but produces scenarios which quickly converge to the unconditional mean.
-The applications that use future scenarios, discussed in Section \ref{sec:introduction}, demands that scenarios resemble the time series past behavior.
+Most statistical models are designed to provide a good fit on point forecasts, but under the stationarity assumption produces scenarios which quickly converge to the unconditional mean.
+The applications that use future scenarios, discussed in Section \ref{sec:introduction}, demands that these scenarios resemble the time series past behavior.
+In order to produce scenarios that fit our goals, we must select the best statistical model according to this objective. 
+% The usage of a measure of fitness that is popular to other applications, such as the $k$-step ahead forecasting error,  
 
-We propose a novel metric, where we simulate future scenarios and take the mean absolute error (MAE) of the unconditional forecasted scenarios to select the model that produces scenarios the most similar to reality.
-The MAE is defined by
+We propose a novel metric, where we simulate future scenarios and take the mean absolute error (MAE) of the unconditional forecasted scenarios to select the model that produces scenarios most similar to those obtained from the observed data.
+The appropriate version of MAE for quantile regression is defined by
 \begin{equation}
 MAE_{\theta}= \frac{1}{|J|} \frac{1}{12} \sum_{j \in J} \sum_{i = 1}^{12}  \left| q_i^{\alpha_{j}}- \hat q_i^{\alpha_{j}}  \right|,
 \label{eq:MAE}
 \end{equation}
-where $\theta = [\gamma \quad \lambda]^T$, $q_t^{\alpha_{j}}$ is the true $\alpha_j$-quantile  and $\hat q_t^{\alpha_j}$ the predicted $\alpha_j$-quantile. We obtain $q_t^{\alpha_j}$ by taking the $\alpha_j$-quantile of the historic values of a given month. The predicted $\hat q_t^{\alpha_j}$ is obtained by taking the $\alpha_j$-quantile 
-The MAE error function emphasizes the correctness across quantiles. Depending on the application, it might be interesting to put different weights on different quantiles. In this work, however, we will treat every quantile as equals concerning the error measure.
+where $q_t^{\alpha_{j}}$ is the unconditional $\alpha_j$-quantile  and $\hat q_t^{\alpha_j}$ the predicted $\alpha_j$-quantile. We obtain $q_t^{\alpha_j}$ by taking the $\alpha_j$-quantile of the historic values of a given month. The predicted $\hat q_t^{\alpha_j}$ is obtained by taking the $\alpha_j$-quantile 
+The MAE error function emphasizes the accuracy across quantiles. Depending on the application, it might be interesting to put different weights on different quantiles. In this work, however, we will treat every quantile as equals concerning the error measure.
 
 We consider the third year ahead as the time series unconditional state. Given that the observed values lies on $t \in \{1,\dots,|T| \}$, the subset of future scenarios $\{y_{|T|+25,s}, y_{|T|+26,s}, \dots, y_{|T|+36,s} \}$ is compared with the observed past values of each month. 
 For each month $i = 1,\dots, 12$, take the $\alpha_j$-quantile $\hat q_t^{\alpha_j}$ from the set of $S$ scenarios $y_{|T|+24+i}$. The estimated quantile is compared with the historic quantile from this period. For example, we evaluate how close the 25\%-quantile
 of all simulated scenarios in the month of March (from the third year) is against the 25\%-quantile
 of all observed months of March. We take the MAE of the absolute difference $\left| q_i^{\alpha_{j}}- \hat q_i^{\alpha_{j}}  \right|$ for every month $i$ and quantile $j$ as the error measure, as shown on equation (\ref{eq:MAE}).
 
-The output of problem (\ref{eq:adalasso-1})-(\ref{eq:adalasso-ult}) is the best 1-step ahead model, giving the tuning parameter $\lambda$ and $\gamma$. 
+The output of problem (\ref{eq:adaLASSO-1})-(\ref{eq:adaLASSO-ult}) is the best 1-step ahead model, giving the tuning parameter $\lambda$ and $\gamma$. 
 So, selecting tuning parameters according to realistic scenario generation puts together a goodness of fit for both the conditional $k$-step ahead, which produces reliable scenario on the short term, but also for scenario generated for the long term.  
 
 % where $q_t^{\alpha_{j}}$ is the true $\alpha$-quantile from the data (in the case study, we use the monthly distribution as a good enough approximation of the true quantile, as RG time series such as wind power are stationary) and $\hat q_t^{\alpha_j}$ is the $\alpha$-quantile from these scenarios, when estimating the model with parameters $\lambda$ and $\gamma$.
