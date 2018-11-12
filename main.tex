@@ -21,10 +21,22 @@
 %\usepackage[a4paper, marginparwidth=1in]{geometry}
 
 % TODO 
-% TODO 1) Retirar cross-validation 
-% TODO 2) Métrica de regularização 
-% a) SIC - é o state of the art
-% b) Métrica que ataca diretamente o objetivo de um modelo de simulação, que é: produzir cenários de longo prazo que recuperem o shape dos quantis incondicionais obtidos no histórico. Falar que isso é uma contribuição para essa nova área de probabilistic forecasting onde os modelos são ajustados para um fitting de um passo a frente, mas as aplicações exigem estabilidade de longo prazo da distribuição. Isso significa que vamos regularizar o modelo através de um métrica de goodness of fit.  
+% Li agora, 
+
+% Tá ficando Leal! 
+
+% Da uma revisado nos parágrafos antes e depois da métrica do MAE, já lá pro final. O parágrafo antes tinha uns errinhos de escrita. Fale da ideia de que o objeto é ajustar os hyperparametros de regularização objetivando um algo que nenhum modelo faz, que é reproduzir quantis históricos. Enfatizando que simulação é diferente de previsão. 
+
+% The chosen regularization hyperparameters are the ones which introduce 
+
+
+% Tire a figura com a simulação. Deixe só a tabela. Os cenários não estão acompanhando bem. Estão gordos em agosto e setembro. 
+
+% Vamos mandar pra revisão de inglês. 
+
+% Veja com a Ana, como fazer para o dee poder pagar. 
+
+% Abs! 
 
 
 
@@ -39,7 +51,7 @@
 \usepackage{verbatim}
 \usepackage{array}
 %\usepackage{multirow}
-\usepackage{subcaption}
+% \usepackage{subcaption}
 \usepackage{dcolumn}
 \usepackage{color}
 \usepackage[noadjust]{cite}
@@ -92,15 +104,16 @@
 
 
 \begin{abstract}
-Producing probabilistic forecasts for renewable generation is one of the hot topics in recent power system applications. In this work, we focus on generating future scenarios of wind power generation.  Most time series methods used to produce such forecasts rely on the assumption of Gaussian errors or conditional Gaussian distribution. However, real life applications on power systems require proper modeling of nongaussian time series with focus on distribution tail dynamics to adress risk-analysis.  
+
+Producing probabilistic forecasts for renewable generation has become an important topic in recent power system applications. In this work, we focus on generating future scenarios of wind power generation.  Most time series methods used to produce such forecasts rely on the assumption of a conditional Gaussian distribution. However, real life applications on power systems require proper modeling of non-Gaussian time series with a focus on distribution tail dynamics to address risk-analysis.  
 We develop, in this work, a nonparametric methodology based on Quantile Regression to estimate the conditional distribution function for wind time series.  
-The conditional distribution is formed by connecting an array of quantiles jointly estimated, for which we develop the model Quantile Regularized Adaptive LASSO (QRAL).	The QRAL implements two types of regularization. One is based on the Adaptive LASSO for selecting covariates within each Quantile Regression. 
-The other emphasizes the connection across different quantiles, reflecting the fact that quantile functions should have smooth variation,
-exploring the similarity of neighbor quantiles.	A case study with realistic wind power data from the Brazilian Northeast compares the developed models with different benchmarks in the literature. The methods were able to outperform them in terms of minimizing the Mean Absolute Percentile Error of future scenarios in recovering the historic monthly quantiles.
+The conditional distribution is formed by connecting an array of quantiles jointly estimated, for which we develop the model Quantile Regularized Adaptive LASSO (QRAL).	In QRAL, we implement two types of regularization. One is based on the Adaptive LASSO for selecting covariates within each Quantile Regression. 
+The other emphasizes the connection across different quantiles, reflecting the fact that quantile functions should have a smooth variation,
+exploring the similarity of neighbor quantiles.	A case study with realistic wind power data from the Brazilian Northeast compares the developed models with different benchmarks in the literature. The model was able to outperform them in terms of minimizing the Mean Absolute Percentile Error of future scenarios in recovering the historic monthly quantiles.
 \end{abstract}
 
 \begin{IEEEkeywords}
-	Quantile Regression, Model Identification, Non-gaussian time series model
+	Quantile auto regression, non parametric model, wind power forecasting
 \end{IEEEkeywords}
 
 
@@ -125,31 +138,14 @@ exploring the similarity of neighbor quantiles.	A case study with realistic wind
 %
 
 
-%% ===== Sec. IV - Simulation ===== %
-
-%\input{ieee-simulation.tex}
-
-%% ===== Sec. V - Estimation ===== %
-%
-%\input{ieee-estimation.tex}
-
-
 %% ===== Sec. VI - Case studies ===== %
 %
 \input{ieee-case-studies.tex}
 
 
-%% ===== Sec. VI - Further Studies ===== %
-
-%  \input{ieee-further-studies.tex}
-
 %% ===== Sec. - Conclusion ===== %
 %
 \input{ieee-concluding-remarks.tex}
-
-%% ===== Sec. - Appendix ===== %
-%
-%\input{ieee-apendix.tex}
 
 % % 
 
