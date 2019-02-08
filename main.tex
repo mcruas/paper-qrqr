@@ -20,25 +20,6 @@
 %\documentclass[journal,12pt,onecolumn,draftclsnofoot,]{IEEEtran}
 %\usepackage[a4paper, marginparwidth=1in]{geometry}
 
-% TODO 
-% Li agora, 
-
-% Tá ficando Leal! 
-
-% Da uma revisado nos parágrafos antes e depois da métrica do MAE, já lá pro final. O parágrafo antes tinha uns errinhos de escrita. Fale da ideia de que o objeto é ajustar os hyperparametros de regularização objetivando um algo que nenhum modelo faz, que é reproduzir quantis históricos. Enfatizando que simulação é diferente de previsão. 
-
-% The chosen regularization hyperparameters are the ones which introduce 
-
-
-% Tire a figura com a simulação. Deixe só a tabela. Os cenários não estão acompanhando bem. Estão gordos em agosto e setembro. 
-
-% Vamos mandar pra revisão de inglês. 
-
-% Veja com a Ana, como fazer para o dee poder pagar. 
-
-% Abs! 
-
-
 
 \usepackage[utf8]{inputenc}
 % \usepackage{epstopdf}
@@ -50,6 +31,7 @@
 \usepackage{graphicx}
 \usepackage{verbatim}
 \usepackage{array}
+\usepackage{algorithm}
 %\usepackage{multirow}
 % \usepackage{subcaption}
 \usepackage{dcolumn}
@@ -82,7 +64,8 @@
 %%%%
 
 
-
+% \setlength{\belowcaptionskip}{-20pt}
+\setlength{\abovecaptionskip}{4pt}
 \DeclareMathOperator*{\Max}{max}
 \DeclareMathOperator*{\Min}{min}
 \DeclareMathOperator*{\argmin}{arg\,min}
@@ -105,11 +88,9 @@
 
 \begin{abstract}
 
-Producing probabilistic forecasts for renewable generation has become an important topic in recent power system applications. In this work, we focus on generating future scenarios of wind power generation.  Most time series methods used to produce such forecasts rely on the assumption of a conditional Gaussian distribution. However, real life applications on power systems require proper modeling of non-Gaussian time series with a focus on distribution tail dynamics to address risk-analysis.  
-We develop, in this work, a nonparametric methodology based on Quantile Regression to estimate the conditional distribution function for wind time series.  
-The conditional distribution is formed by connecting an array of quantiles jointly estimated, for which we develop the model Quantile Regularized Adaptive LASSO (QRAL).	In QRAL, we implement two types of regularization. One is based on the Adaptive LASSO for selecting covariates within each Quantile Regression. 
-The other emphasizes the connection across different quantiles, reflecting the fact that quantile functions should have a smooth variation,
-exploring the similarity of neighbor quantiles.	A case study with realistic wind power data from the Brazilian Northeast compares the developed models with different benchmarks in the literature. The model was able to outperform them in terms of minimizing the Mean Absolute Percentile Error of future scenarios in recovering the historic monthly quantiles.
+Producing probabilistic forecasts for renewable generation has become an important topic in recent power system applications. In this work, we focus on generating future scenarios of wind power generation. Most time series methods used to produce such forecasts rely on the assumption of a conditional Gaussian distribution. However, real-life applications on power systems require proper modeling of non-Gaussian time series with a focus on distribution tail dynamics to address risk-analysis.  
+We develop, in this work, a time-series model based on a nonparametric conditional distribution function for wind-power time series. The conditional distribution is formed by connecting an array of jointly estimated quantile regression models. The estimation process is based on a single linear optimization model with two regularization terms. The first term considers the Adaptive LASSO for selecting relevant covariates within each Quantile Regression. The second term regularizes the smoothness, through the second derivative, of the regression coefficients across different quantiles. Hence, the proposed model connects the regression coefficients across the different quantiles creating the idea of a single conditional-distribution model capable to produce a probabilistic forecast.
+A case study with realistic wind power data from the Brazilian Northeast compares the developed models with different benchmarks in the literature. %The model was able to outperform them in terms of minimizing the Mean Absolute Percentile Error of future scenarios in recovering the historic monthly quantiles.
 \end{abstract}
 
 \begin{IEEEkeywords}
